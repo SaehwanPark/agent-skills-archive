@@ -11,6 +11,17 @@ uv run deploy-skills
 uv run deploy-skills --all
 ```
 
+For spawned or non-interactive environments where `uv` may not be on `PATH`, use the
+repo-local launcher:
+
+```bash
+./bin/deploy-skills --list-skills
+./bin/deploy-skills --all
+```
+
+The launcher defaults to `/Users/saehwan/.local/bin/uv`. Override it with `UV_BIN`
+if `uv` is installed elsewhere.
+
 By default, this opens a chooser and installs the selected skill(s) into the Codex personal location:
 
 ```text

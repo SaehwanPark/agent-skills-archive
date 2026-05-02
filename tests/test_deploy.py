@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import os
+import shutil
+import subprocess
 import tempfile
 import unittest
 from io import StringIO
@@ -165,6 +167,22 @@ class DeployTests(unittest.TestCase):
 
       self.assertEqual(exit_code, 0)
       input_mock.assert_not_called()
+
+  def test_repo_launcher_does_not_require_uv_on_path(self) -> None:
+    uv_bin = shutil.which("uv")
+    self.assertIsNotNone(uv_bin)
+    repo = Path(__file__).resolve().parents[1]
+
+    result = subprocess.run(
+      [str(repo / "bin" / "deploy-skills"), "--list-skills"],
+      cwd=tempfile.gettempdir(),
+      env={"PATH": "/usr/bin:/bin", "UV_BIN": uv_bin or ""},
+      check=True,
+      capture_output=True,
+      text=True,
+    )
+
+    self.assertIn("fp-developer\t", result.stdout)
 
 
 if __name__ == "__main__":

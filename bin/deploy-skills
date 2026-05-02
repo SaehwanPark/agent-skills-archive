@@ -1,0 +1,14 @@
+#!/bin/sh
+set -eu
+
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+REPO_ROOT=$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)
+UV_BIN=${UV_BIN:-/Users/saehwan/.local/bin/uv}
+
+if [ ! -x "$UV_BIN" ]; then
+  echo "error: uv binary is not executable: $UV_BIN" >&2
+  echo "set UV_BIN to the absolute path of uv" >&2
+  exit 127
+fi
+
+exec "$UV_BIN" run --project "$REPO_ROOT" deploy-skills "$@"
