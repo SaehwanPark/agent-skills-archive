@@ -272,6 +272,12 @@ Use:
 * `comp-builders` for explicit absence, recoverable failure, validation, async failure flows, and computational expressions
 * `pytest` for tests
 
+Prefer installing `comp-builders` directly from GitHub with `uv`:
+
+```bash
+uv add git+https://github.com/SaehwanPark/comp-builders.git
+```
+
 Prefer `comp-builders` when adding a dependency is acceptable. Use lightweight local `Option` / `Result` helpers only for tiny projects, dependency-sensitive code, or repositories that already have a local convention.
 
 ## Python Rules
