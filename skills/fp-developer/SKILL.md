@@ -269,10 +269,10 @@ Use:
 
 * `mypy` for static type checking
 * `pydantic` for validated boundary models
-* local `Option` / `Result` helpers for explicit absence, recoverable failure, and composition
+* `comp-builders` for explicit absence, recoverable failure, validation, async failure flows, and computational expressions
 * `pytest` for tests
 
-Prefer lightweight local `Option` / `Result` helpers for absence, recoverable failure, and composable pipelines. Add only the minimal helper code the project needs; do not introduce a third-party monad dependency for new work.
+Prefer `comp-builders` when adding a dependency is acceptable. Use lightweight local `Option` / `Result` helpers only for tiny projects, dependency-sensitive code, or repositories that already have a local convention.
 
 ## Python Rules
 
@@ -345,37 +345,88 @@ def add_item(items: tuple[str, ...], item: str) -> tuple[str, ...]:
 
 Use `Optional` only for true absence.
 
-Prefer local `Option` / `Result`-style values for absence and recoverable failure when they clarify composition.
+Prefer `comp-builders` values for absence, recoverable failure, validation, and composable pipelines when they clarify the data flow.
 
 Prefer:
 
-* `Maybe` / `Option`-style values for absence
-* `Either` / `Result`-style values for recoverable failure
-* `map`, bind/then-style composition, and pure transformation pipelines
+* `Option` for expected absence
+* `Result` for recoverable failure where the workflow should stop on the first error
+* `Validation` for independent checks where accumulated errors are more useful than fail-fast behavior
+* `AsyncResult` for async workflows that should return explicit success or failure values
+* `map`, bind/then-style composition, computational expression blocks, and pure transformation pipelines
 
 Avoid deeply nested conditionals or exception-driven control flow for expected domain failures.
 
 Keep these values in the pure/domain layer where they clarify composition. Convert at impure edges when frameworks, serializers, or external APIs expect plain Python values.
 
-If the project needs concrete helpers, define small local dataclasses or classes rather than adding a new package.
+When using `comp-builders`, keep generator blocks short and readable. Use the block to express orchestration, but keep individual steps as normal typed functions that return `Result`, `Option`, `Validation`, or `AsyncResult`.
 
 ```python
-from dataclasses import dataclass
-from typing import Generic, TypeVar
+from comp_builders import Err, Ok, Result, result
 
-T = TypeVar("T")
-E = TypeVar("E")
+def parse_user_id(raw: str) -> Result[int, str]:
+  try:
+    return Ok(int(raw))
+  except ValueError:
+    return Err("user_id must be an integer")
 
-@dataclass(frozen=True)
-class Ok(Generic[T]):
-  value: T
+def require_positive(user_id: int) -> Result[int, str]:
+  if user_id <= 0:
+    return Err("user_id must be positive")
+  return Ok(user_id)
 
-@dataclass(frozen=True)
-class Err(Generic[E]):
-  error: E
-
-Result = Ok[T] | Err[E]
+@result.block
+def load_user_input(raw: str) -> Result[int, str]:
+  user_id = yield parse_user_id(raw)
+  return yield require_positive(user_id)
 ```
+
+Use `Option` when absence is expected and not itself an error.
+
+```python
+from comp_builders import Nothing, Option, Some, option
+
+def first_item(items: tuple[str, ...]) -> Option[str]:
+  if not items:
+    return Nothing
+  return Some(items[0])
+
+@option.block
+def normalized_first_item(items: tuple[str, ...]) -> Option[str]:
+  item = yield first_item(items)
+  cleaned = item.strip()
+  if not cleaned:
+    return Nothing
+  return cleaned
+```
+
+Use `Validation` when several checks can run independently and the caller benefits from all errors at once.
+
+```python
+from comp_builders import Invalid, Validation, Valid, validation
+
+def validate_name(name: str) -> Validation[str, str]:
+  if not name.strip():
+    return Invalid("name is required")
+  return Valid(name.strip())
+
+def validate_age(age: int) -> Validation[int, str]:
+  if age < 0:
+    return Invalid("age must be non-negative")
+  return Valid(age)
+
+@validation.block
+def validate_profile(name: str, age: int) -> Validation[tuple[str, int], str]:
+  valid_name = yield validate_name(name)
+  valid_age = yield validate_age(age)
+  return (valid_name, valid_age)
+```
+
+Do not use computational expression builders to hide IO inside the pure core. For example, read files, call APIs, emit logs, and access environment variables at the edge; then pass plain inputs into pure functions that return explicit values.
+
+Strict type checkers may need generator return annotations or `typing.cast` around yielded values in larger workflows. Keep the annotations local to the block rather than weakening the public function type.
+
+If `comp-builders` is not appropriate for a project, define only the minimal local dataclasses or classes needed for that codebase instead of building a general-purpose monad library.
 
 ### Keep Core Logic Mock-Free
 
