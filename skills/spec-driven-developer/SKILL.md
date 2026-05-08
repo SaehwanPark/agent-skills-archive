@@ -1,85 +1,482 @@
 ---
 name: spec-driven-developer
-description: Maintain SPEC.md, ARCHITECTURE.md, and CHANGELOG.md while implementing features so project intent, current design, and release history stay accurate.
+description: Maintain SPEC.md, ARCHITECTURE.md, and CHANGELOG.md while implementing features so project intent, current design, and release history stay accurate and verifiable.
 ---
 
 # spec-driven-developer
 
 ## Purpose
 
-Use this skill when implementing, reviewing, or planning code changes in a repo that should keep root project documents aligned with development.
+Use this skill when implementing, reviewing, or planning code changes in a small to mid-sized personal project that should keep repo-level documentation aligned with development.
 
-Primary goals:
+This workflow is intentionally lightweight and optimized for:
 
-- Treat `SPEC.md` as the source of feature state.
-- Keep `ARCHITECTURE.md` accurate enough for new contributors.
-- Update `CHANGELOG.md` at meaningful checkpoints.
-- Leave future agents with clear project intent and current design context.
+* solo developers
+* AI-assisted development
+* long-running personal projects
+* reducing context drift
+* preserving architectural intent
+* avoiding undocumented "vibe coding"
 
-## Required Project Files
+The goal is not to replace issue trackers, kanban systems, or formal enterprise SDLC processes.
 
-At the repo root, manage these files when they exist or when the project expects this workflow:
+Instead, this workflow provides a persistent markdown-based memory system that keeps project state understandable to both humans and coding agents.
 
-- `SPEC.md`: feature inventory split into past, present, and future.
-- `ARCHITECTURE.md`: high-level structure, module responsibilities, and process or data flow.
-- `CHANGELOG.md`: notable completed changes, grouped by checkpoint or release.
+---
 
-If a required file is missing and the task involves feature work, create the minimum useful version unless the user or repo has a different documentation convention.
+# Core Principles
 
-## SPEC.md Workflow
+## Documentation Is Operational State
 
-`SPEC.md` should have three clear categories:
+The markdown files in the repository are treated as operational context for both developers and agents.
 
-- Past: features already implemented.
-- Present: features being implemented or actively in progress.
-- Future: planned features or work that should be done later.
+They should reflect:
 
-Before implementing a feature:
+* what exists
+* what is actively changing
+* what is planned
+* why the system is structured the way it is
+
+## Lightweight Over Bureaucratic
+
+This workflow intentionally avoids:
+
+* heavyweight specification frameworks
+* excessive process gating
+* enterprise approval chains
+* over-detailed task decomposition
+
+Prefer concise, maintainable documentation over exhaustive process.
+
+## Minimize Context Drift
+
+When implementation changes but documentation does not, future contributors and agents lose trust in the repo.
+
+This workflow exists primarily to reduce:
+
+* stale architectural assumptions
+* forgotten feature intent
+* undocumented behavior changes
+* invisible scope creep
+
+## Preserve Architectural Stability
+
+Agents should not introduce architectural drift simply because a shortcut appears convenient.
+
+Documented constraints and invariants should be preserved unless explicitly changed.
+
+---
+
+# Required Project Files
+
+Manage these files at the repository root when they exist or when the project adopts this workflow:
+
+* `SPEC.md`
+* `ARCHITECTURE.md`
+* `CHANGELOG.md`
+
+Optional:
+
+* `TASKS.md`
+
+---
+
+# File Responsibilities
+
+## SPEC.md
+
+Purpose:
+
+* feature inventory
+* active development scope
+* planned project evolution
+* implementation verification criteria
+
+`SPEC.md` is NOT:
+
+* a kanban board
+* a sprint tracker
+* a replacement for GitHub Issues
+* a detailed implementation task breakdown
+
+## ARCHITECTURE.md
+
+Purpose:
+
+* explain high-level system structure
+* preserve important constraints
+* help new contributors orient quickly
+* reduce accidental architectural drift
+
+## CHANGELOG.md
+
+Purpose:
+
+* preserve meaningful project history
+* summarize user-visible or contributor-visible changes
+* track important fixes and milestones
+
+## TASKS.md (Optional)
+
+Purpose:
+
+* short-lived execution planning
+* implementation sequencing
+* temporary decomposition of active work
+
+Use `TASKS.md` only if implementation complexity justifies it.
+
+Avoid turning it into permanent project management overhead.
+
+---
+
+# SPEC.md Workflow
+
+`SPEC.md` should contain three primary categories:
+
+* Past
+* Present
+* Future
+
+## Category Definitions
+
+### Past
+
+Features or work already completed and verified.
+
+### Present
+
+Features actively being implemented or refined.
+
+This section should remain intentionally small.
+
+If a feature is paused or abandoned for now, move it back to Future.
+
+### Future
+
+Planned or desired work not currently being implemented.
+
+---
+
+# Present Item Format
+
+Each Present item should include lightweight operational metadata.
+
+Example:
+
+```md
+- Feature: Incremental indexing
+  Status: Active
+  Started: 2026-05-01
+  Branch: feat/incremental-indexing
+
+  Summary:
+  Add partial re-index support for modified documents.
+
+  Verification:
+  - Incremental update integration test passes
+  - Re-index operation completes under 30 seconds
+  - Existing full rebuild flow still works
+
+  Out of Scope:
+  - Distributed indexing
+  - Realtime synchronization
+```
+
+Metadata should remain concise.
+
+Do not turn SPEC.md into a detailed issue tracker.
+
+---
+
+# SPEC.md Rules
+
+## Before Implementation
 
 1. Read `SPEC.md`.
-2. If the feature appears in Future, move or copy it into Present and mark the work as active.
-3. If the feature is not listed, add a concise Present item describing the feature and expected outcome.
-4. Preserve unrelated feature entries and wording.
+2. Identify whether the feature already exists in Future.
+3. Move or copy relevant work into Present.
+4. Add concise verification criteria.
+5. Explicitly define out-of-scope work.
+6. Preserve unrelated entries.
 
-After implementing the feature:
+If the feature does not exist:
 
-1. Update the Present item with the actual result.
-2. Move completed work into Past.
-3. Leave incomplete follow-up work in Present or Future, depending on whether it is actively underway.
-4. Make sure the feature state in `SPEC.md` matches the code, tests, and docs.
+* create a concise Present item
+* describe intended behavior
+* define minimal verification criteria
 
-## ARCHITECTURE.md Workflow
+## During Implementation
 
-Update `ARCHITECTURE.md` whenever a change affects project structure, module boundaries, major dependencies, control flow, data flow, storage, APIs, or operational behavior.
+Keep Present entries aligned with reality.
 
-The document should help a new contributor quickly answer:
+If scope changes significantly:
 
-- What are the main modules or services?
-- What does each major part own?
-- How does data or control move through the system?
-- Which files or directories are the likely entry points?
-- What invariants or boundaries should future changes preserve?
+* update the summary
+* update verification criteria
+* explicitly document deferred work
 
-Keep the document high level. Prefer diagrams in plain text or short ordered flows when they clarify the design.
+## After Implementation
 
-## CHANGELOG.md Workflow
+1. Update Present with actual implemented behavior.
+2. Run or describe verification.
+3. Move completed work into Past.
+4. Leave unfinished follow-up work in Present or Future.
+5. Ensure SPEC.md matches:
 
-Update `CHANGELOG.md` at important checkpoints, including completed features, meaningful behavior changes, migrations, compatibility changes, and fixes worth calling out.
+   * implementation
+   * tests
+   * architecture
+   * changelog entries
 
-When the changelog is stale:
+---
 
-1. Read `SPEC.md` and recent project changes.
-2. Identify completed features not yet reflected in `CHANGELOG.md`.
-3. Summarize them in user-facing language.
-4. Avoid listing noisy internal edits unless they affect users, operators, or contributors.
+# Verification Requirements
 
-If the repo does not define a changelog style, use a simple reverse-chronological structure with an `Unreleased` section.
+Before moving work from Present to Past:
 
-## Final Check
+* define explicit verification criteria
+* confirm behavior matches implementation
+* run relevant tests when available
+* document known limitations
+* document intentionally deferred work
+
+Verification may include:
+
+* unit tests
+* integration tests
+* manual validation steps
+* performance checks
+* migration validation
+* API compatibility checks
+
+Agents should avoid claiming work is complete without evidence.
+
+---
+
+# ARCHITECTURE.md Workflow
+
+Update `ARCHITECTURE.md` whenever changes affect:
+
+* module structure
+* control flow
+* data flow
+* storage
+* APIs
+* dependency boundaries
+* operational behavior
+* deployment assumptions
+* concurrency assumptions
+
+The document should help a new contributor answer:
+
+* What are the major modules?
+* What does each module own?
+* How does data move through the system?
+* What are the important boundaries?
+* Which files are likely entry points?
+* What assumptions must future work preserve?
+
+Keep the document high-level.
+
+Prefer:
+
+* concise explanations
+* short ordered flows
+* lightweight diagrams
+* architectural constraints
+
+Avoid:
+
+* excessive implementation details
+* line-by-line code explanations
+* redundant API documentation
+
+---
+
+# Architecture Freshness Rules
+
+Each major section should include:
+
+```md
+Last Reviewed: YYYY-MM-DD
+Status: Verified
+```
+
+Allowed status values:
+
+* Verified
+* Needs Review
+* Partially Stale
+
+If architecture accuracy is uncertain:
+
+* mark it explicitly
+* do not silently imply correctness
+
+---
+
+# Constraints and Invariants
+
+`ARCHITECTURE.md` should document important constraints such as:
+
+* forbidden dependencies
+* required abstractions
+* persistence guarantees
+* API compatibility rules
+* performance boundaries
+* concurrency assumptions
+* security constraints
+* directory ownership boundaries
+
+Agents should preserve these invariants unless explicitly instructed otherwise.
+
+---
+
+# CHANGELOG.md Workflow
+
+`CHANGELOG.md` should follow a simplified Keep a Changelog structure.
+
+Recommended categories:
+
+* Added
+* Changed
+* Fixed
+* Removed
+* Deprecated
+* Security
+
+Use reverse chronological ordering.
+
+Maintain an `Unreleased` section.
+
+---
+
+# CHANGELOG.md Rules
+
+Update the changelog when completing:
+
+* meaningful features
+* user-visible behavior changes
+* architectural migrations
+* compatibility changes
+* important fixes
+* operational changes worth preserving
+
+Avoid noisy entries for:
+
+* trivial refactors
+* formatting changes
+* inconsequential internal edits
+
+If the changelog is stale:
+
+1. Review SPEC.md.
+2. Review recent implementation changes.
+3. Summarize missing completed work.
+4. Prefer contributor-facing language.
+
+---
+
+# Concurrent Work Rules
+
+When multiple features are active simultaneously:
+
+* never overwrite unrelated Present items
+* preserve metadata from other contributors
+* prefer additive edits over restructuring
+* avoid silently resolving conflicting assumptions
+
+If inconsistencies appear between:
+
+* implementation
+* architecture
+* specification
+
+then:
+
+1. document the inconsistency
+2. leave follow-up notes
+3. avoid pretending alignment exists
+
+---
+
+# Rollback and Partial Completion Rules
+
+If work is partially reverted:
+
+* move the feature back into Present
+* document rollback reasons
+* preserve historical changelog entries
+* document remaining known issues
+
+Do not erase project history simply because implementation direction changed.
+
+---
+
+# Bootstrapping Missing Files
+
+If required files do not exist, create minimal useful versions.
+
+## Minimal SPEC.md
+
+```md
+# SPEC
+
+## Past
+- Initial project scaffolding
+
+## Present
+- Current active work
+
+## Future
+- Planned improvements
+```
+
+## Minimal ARCHITECTURE.md
+
+```md
+# ARCHITECTURE
+
+## Overview
+Short system summary.
+
+Last Reviewed: YYYY-MM-DD
+Status: Verified
+
+## Main Modules
+- module_a: responsibility
+- module_b: responsibility
+
+## Data Flow
+1. Input
+2. Processing
+3. Output
+```
+
+## Minimal CHANGELOG.md
+
+```md
+# CHANGELOG
+
+## Unreleased
+
+### Added
+- Initial setup
+```
+
+---
+
+# Final Check
 
 Before finishing work:
 
-- Confirm `SPEC.md` has the correct past, present, and future state.
-- Confirm `ARCHITECTURE.md` reflects any structural or flow changes.
-- Confirm `CHANGELOG.md` includes important completed checkpoints.
-- Mention any documentation updates in the final response.
+* confirm SPEC.md reflects actual feature state
+* confirm Present items remain accurate
+* confirm verification criteria were addressed
+* confirm ARCHITECTURE.md reflects structural changes
+* confirm architectural constraints still hold
+* confirm CHANGELOG.md includes meaningful updates
+* mention documentation updates in the final response
+
+The repository should remain understandable to a future contributor or agent with no prior session context.
