@@ -267,7 +267,7 @@ Red flags:
 
 Use:
 
-* `mypy` for static type checking
+* `pyright` for static type checking
 * `pydantic` for validated boundary models
 * `comp-builders` for explicit absence, recoverable failure, validation, async failure flows, and computational expressions
 * `pytest` for tests
@@ -279,6 +279,8 @@ uv add git+https://github.com/SaehwanPark/comp-builders.git
 ```
 
 Prefer `comp-builders` when adding a dependency is acceptable. Use lightweight local `Option` / `Result` helpers only for tiny projects, dependency-sensitive code, or repositories that already have a local convention.
+
+Prefer project-local Pyright configuration in `pyproject.toml` or `pyrightconfig.json`. Use strict checking where practical, and avoid weakening type guarantees to silence errors. If a repository cannot be fully strict yet, scope ignores narrowly and document why they are temporary.
 
 ## Python Rules
 
@@ -430,7 +432,7 @@ def validate_profile(name: str, age: int) -> Validation[tuple[str, int], str]:
 
 Do not use computational expression builders to hide IO inside the pure core. For example, read files, call APIs, emit logs, and access environment variables at the edge; then pass plain inputs into pure functions that return explicit values.
 
-Strict type checkers may need generator return annotations or `typing.cast` around yielded values in larger workflows. Keep the annotations local to the block rather than weakening the public function type.
+Pyright may need generator return annotations, local `typing.cast` calls, or small helper functions around yielded values in larger workflows. Keep those annotations local to the block rather than weakening the public function type or introducing `Any`.
 
 If `comp-builders` is not appropriate for a project, define only the minimal local dataclasses or classes needed for that codebase instead of building a general-purpose monad library.
 
@@ -453,7 +455,7 @@ def load_predictions(path: Path) -> Predictions:
 Run before finalizing:
 
 ```bash
-uvx mypy .
+uvx pyright
 uvx pytest
 ```
 (parameters might vary depending on codebase directory structures)
