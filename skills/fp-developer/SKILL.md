@@ -1,6 +1,6 @@
 ---
 name: fp-developer
-description: Apply and enforce a functional-first development workflow with explicit state, pure core logic, typed boundaries, tests-as-specs, and Python/Rust-specific tooling.
+description: Apply and enforce a functional-first development workflow with explicit state, pure core logic, typed boundaries, tests-as-specs, and Python, Rust, Swift, and Kotlin tooling.
 ---
 
 # fp-developer
@@ -29,7 +29,7 @@ Organize code into:
 
 ```text
 impure edge -> pure core -> impure edge
-````
+```
 
 The pure core should contain domain logic, validation, transformations, scoring, modeling, and decision rules.
 
@@ -589,9 +589,360 @@ cargo clippy -- -D warnings
 cargo test
 ```
 
+
 ---
 
-# Part 5: Review Protocol for Agents
+# Part 5: Swift Setup
+
+## Recommended Tooling
+
+Use:
+
+* Swift Package Manager for package build, test, run, and dependency workflows
+* Swift Testing for new tests where the supported platform and toolchain allow it
+* XCTest for existing projects, Apple-platform integration tests, or compatibility needs
+* `swift-format` for formatting and linting when adopted by the repository
+* Swift 6 language mode and strict concurrency checking where practical
+* `Optional`, `Result`, domain `struct`, `enum`, `actor`, and protocol types
+
+Prefer the repository's existing Xcode or SwiftPM layout. Do not add third-party functional libraries unless the project already uses them or the gain is clear.
+
+## Swift Rules
+
+### Prefer Value Types and Immutability
+
+Default to `let`, `struct`, and pure transformations.
+
+Bad:
+
+```swift
+final class Accumulator {
+  var total: Int = 0
+
+  func add(_ value: Int) {
+    total += value
+  }
+}
+```
+
+Good:
+
+```swift
+struct Accumulator: Sendable, Equatable {
+  let total: Int
+}
+
+func add(_ value: Int, to accumulator: Accumulator) -> Accumulator {
+  Accumulator(total: accumulator.total + value)
+}
+```
+
+Use `var` only for local, tightly scoped mutation that improves clarity or performance.
+
+### Model Domains Explicitly
+
+Avoid primitive obsession.
+
+Bad:
+
+```swift
+func train(modelType: String, status: String) {}
+```
+
+Good:
+
+```swift
+enum ModelType: Sendable {
+  case transformer
+  case linear
+}
+
+enum TrainingStatus: Sendable {
+  case pending
+  case running
+  case finished
+  case failed(TrainingError)
+}
+```
+
+Prefer `struct` and `enum` domain models that conform to `Sendable`, `Equatable`, `Hashable`, `Codable`, or `Identifiable` only when those contracts are meaningful.
+
+### Use Optional for Absence
+
+Use `Optional` only when absence is expected and not itself an error.
+
+```swift
+func findUser(id: UserID, users: [User]) -> User? {
+  users.first { $0.id == id }
+}
+```
+
+Do not use `nil` to hide validation failures, authorization failures, or parse errors that the caller needs to distinguish.
+
+### Use Result or Typed Throws for Recoverable Failure
+
+For synchronous pure core logic, prefer explicit domain errors.
+
+```swift
+enum ConfigError: Error, Equatable, Sendable {
+  case missingField(String)
+  case invalidPort(Int)
+}
+
+func parseConfig(_ raw: RawConfig) -> Result<Config, ConfigError> {
+  ...
+}
+```
+
+Use `throws` where it matches Swift API conventions or integrates better with existing call sites. Keep thrown errors domain-specific and tested.
+
+### Keep Effects at the Edge
+
+Bad:
+
+```swift
+func computeScore(path: URL) throws -> Score {
+  let data = try Data(contentsOf: path)
+  ...
+}
+```
+
+Good:
+
+```swift
+func computeScore(input: Input) -> Score {
+  ...
+}
+
+func loadInput(from path: URL) throws -> Input {
+  ...
+}
+```
+
+Read files, call services, access environment values, and emit logs at the edge. Pass plain values into the core.
+
+### Treat Concurrency as an Explicit Boundary
+
+Prefer structured concurrency with `async`/`await`, `TaskGroup`, and actors at effect boundaries.
+
+* Do not create detached tasks from pure core logic.
+* Do not hide mutable shared state behind classes when an `actor` or explicit state transition would be clearer.
+* Mark cross-concurrency domain values as `Sendable` where appropriate.
+* Keep `@MainActor` and UI isolation at the adapter edge.
+* Avoid `@unchecked Sendable` unless there is a documented invariant and a focused test or review reason.
+
+### Swift Tests
+
+Use Swift Testing for new pure-core tests when available.
+
+```swift
+import Testing
+
+@Test func addReturnsUpdatedAccumulator() {
+  let oldState = Accumulator(total: 1)
+  let newState = add(2, to: oldState)
+
+  #expect(newState == Accumulator(total: 3))
+}
+```
+
+Use XCTest when required by the project or platform constraints.
+
+Keep tests deterministic. Avoid global state because Swift Testing may run tests concurrently unless configured otherwise.
+
+### Swift Commands
+
+Run before finalizing:
+
+```bash
+swift format --in-place --recursive Sources Tests
+swift format lint --recursive Sources Tests
+swift build
+swift test
+```
+
+For Xcode projects, use the repository's configured `xcodebuild test` command. If Swift 6 migration is in progress, run the configured build with strict concurrency diagnostics enabled and report remaining warnings clearly.
+
+---
+
+# Part 6: Kotlin Setup
+
+## Recommended Tooling
+
+Use:
+
+* Gradle with the Kotlin Gradle plugin for build, compiler options, tests, and multiplatform targets
+* Kotlin compiler warnings and explicit compiler options in the Gradle DSL
+* `detekt` for static analysis and complexity checks when adopted by the repository
+* `ktlint` for Kotlin formatting and style checks when adopted by the repository
+* JUnit, Kotest, or the project-standard test framework
+* `Result`, nullable types, sealed interfaces/classes, data classes, value classes, and immutable collections where appropriate
+* `kotlinx.coroutines` structured concurrency for async workflows
+
+Prefer the repository's existing Gradle conventions. Do not add detekt, ktlint, Kotest, Arrow, or other dependencies unless the project already uses them or the benefit is explicit.
+
+## Kotlin Rules
+
+### Prefer Immutable Values
+
+Default to `val`, data classes, and pure transformations.
+
+Bad:
+
+```kotlin
+class Accumulator {
+  var total: Int = 0
+
+  fun add(value: Int) {
+    total += value
+  }
+}
+```
+
+Good:
+
+```kotlin
+data class Accumulator(
+  val total: Int,
+)
+
+fun add(value: Int, accumulator: Accumulator): Accumulator =
+  accumulator.copy(total = accumulator.total + value)
+```
+
+Use `var` only for local, tightly scoped mutation that improves clarity or performance.
+
+### Model Domains Explicitly
+
+Avoid primitive obsession.
+
+Bad:
+
+```kotlin
+fun train(modelType: String, status: String) {}
+```
+
+Good:
+
+```kotlin
+enum class ModelType {
+  Transformer,
+  Linear,
+}
+
+sealed interface TrainingStatus {
+  data object Pending : TrainingStatus
+  data object Running : TrainingStatus
+  data object Finished : TrainingStatus
+  data class Failed(val error: TrainingError) : TrainingStatus
+}
+```
+
+Use `@JvmInline value class` for lightweight domain wrappers when they improve type safety without adding runtime overhead on the JVM.
+
+### Use Nullable Types for Absence
+
+Use nullable types only when absence is expected and not itself an error.
+
+```kotlin
+fun findUser(id: UserId, users: List<User>): User? =
+  users.firstOrNull { it.id == id }
+```
+
+Do not return `null` for validation failures, authorization failures, or parse errors that the caller needs to distinguish.
+
+### Use Result or Sealed Errors for Recoverable Failure
+
+Prefer explicit domain failures.
+
+```kotlin
+sealed interface ConfigError {
+  data class MissingField(val name: String) : ConfigError
+  data class InvalidPort(val value: Int) : ConfigError
+}
+
+sealed interface ConfigResult {
+  data class Success(val config: Config) : ConfigResult
+  data class Failure(val error: ConfigError) : ConfigResult
+}
+```
+
+Use Kotlin's `Result<T>` when it fits project conventions and the error type does not need to be part of the public domain contract. Use sealed result types when callers need exhaustive, typed recovery.
+
+### Keep Effects at the Edge
+
+Bad:
+
+```kotlin
+fun computeScore(path: Path): Score {
+  val raw = path.readText()
+  ...
+}
+```
+
+Good:
+
+```kotlin
+fun computeScore(input: Input): Score =
+  ...
+
+fun loadInput(path: Path): Input =
+  ...
+```
+
+Read files, call services, access environment values, launch coroutines, and emit logs at the edge. Pass plain values into the core.
+
+### Treat Coroutines as an Explicit Boundary
+
+Prefer structured concurrency.
+
+* Use `suspend` functions for async effects instead of blocking hidden work inside core functions.
+* Keep `CoroutineScope` ownership at adapters, services, or application boundaries.
+* Avoid `GlobalScope` and unstructured launched work.
+* Let cancellation propagate; do not swallow `CancellationException`.
+* Inject dispatchers for effectful adapters when tests need control.
+* Keep pure core functions non-`suspend` unless the computation itself depends on suspendable inputs.
+
+### Kotlin Tests
+
+Test pure functions directly without mocks.
+
+```kotlin
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+class AccumulatorTest {
+  @Test
+  fun addReturnsUpdatedAccumulator() {
+    val oldState = Accumulator(total = 1)
+    val newState = add(2, oldState)
+
+    assertEquals(Accumulator(total = 3), newState)
+  }
+}
+```
+
+Prefer property-style tests for transformations with invariants. Keep coroutine tests deterministic with the project-standard coroutine test utilities.
+
+### Kotlin Commands
+
+Run before finalizing:
+
+```bash
+./gradlew ktlintCheck detekt test
+```
+
+For Android projects, also run the relevant unit and instrumentation tasks configured by the repository. For multiplatform projects, run the relevant target test tasks or `allTests` when configured.
+
+When the repository does not use ktlint or detekt, run the closest configured equivalents, usually:
+
+```bash
+./gradlew check
+```
+
+---
+
+# Part 7: Review Protocol for Agents
 
 When reviewing or modifying code:
 
@@ -618,7 +969,7 @@ Do not introduce clever abstractions unless they reduce hidden context.
 
 ---
 
-# Part 6: Final Response Expectations
+# Part 8: Final Response Expectations
 
 When using this skill, summarize:
 
