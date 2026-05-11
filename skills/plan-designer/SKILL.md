@@ -1,11 +1,11 @@
 ---
 name: plan-designer
-description: Use when Codex is asked to create, improve, or review a coding implementation plan before editing code. This skill turns ambiguous or ambitious plan-mode output into a bounded, operational plan with explicit assumptions, file targets, tests, acceptance criteria, non-goals, stop conditions, and review checks.
+description: Use when coding agents--including Codex, ForgeCode, etc.--are asked to create, improve, or review a coding implementation plan before editing code. This skill turns ambiguous or ambitious plan-mode output into a bounded, operational plan with explicit assumptions, file targets, tests, acceptance criteria, non-goals, stop conditions, and review checks.
 ---
 
 # Plan Designer
 
-Use this skill when working in plan mode for a coding task, or when asked to make a coding plan clearer, less ambitious, less ambiguous, or easier for another agent to execute.
+Use this skill when working in plan mode (note: different coding agents may call this mode differently; for example, ForgeCode call this mode `Muse` agent) for a coding task, or when asked to make a coding plan clearer, less ambitious, less ambiguous, or easier for another agent to execute.
 
 The goal is to reduce implementation reasoning burden. The plan should make the next step mostly mechanical: inspect specific code, make bounded edits, add focused tests, run checks, and stop when the plan no longer fits the codebase.
 
