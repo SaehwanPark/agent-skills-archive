@@ -1,0 +1,14 @@
+name: fp-developer
+description: Apply and enforce a functional-first development workflow with explicit state, pure core logic, typed boundaries, tests-as-specs, and language-specific guidance for Python, Rust, Swift, Kotlin, and Mojo.
+version: 0.2.0
+entrypoint: SKILL.md
+references:
+  - references/checklists.md
+  - references/review-protocol.md
+  - references/python.md
+  - references/rust.md
+  - references/swift.md
+  - references/kotlin.md
+  - references/mojo.md
+examples:
+  - examples/review-summary-template.md
