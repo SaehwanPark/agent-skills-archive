@@ -37,6 +37,7 @@ By default, this opens a chooser and installs the selected skill(s) into the Cod
 | ForgeCode | `~/forge/skills` | `.forge/skills` |
 | Droid | `~/.factory/skills` | `.factory/skills` |
 | OpenCode | `~/.config/opencode/skills` | `.opencode/skills` |
+| AntiGravity CLI | `~/.gemini/skills` | `.agents/skills` |
 
 Copy everything explicitly:
 

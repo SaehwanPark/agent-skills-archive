@@ -57,6 +57,8 @@ def target_for(agent: str, scope: str, project: Path) -> Target:
     if scope != "personal":
       raise DeployError("codex-legacy only supports --scope personal")
     path = Path(os.environ.get("CODEX_HOME", home / ".codex")).expanduser() / "skills"
+  elif agent in ("antigravity", "gemini"):
+    path = home / ".gemini" / "skills" if scope == "personal" else project / ".agents" / "skills"
   elif agent == "claude":
     path = home / ".claude" / "skills" if scope == "personal" else project / ".claude" / "skills"
   elif agent == "forge":
@@ -81,7 +83,7 @@ def target_for(agent: str, scope: str, project: Path) -> Target:
 
 def agents_for(agent: str) -> list[str]:
   if agent == "all":
-    return ["codex", "claude", "forge", "droid", "opencode"]
+    return ["codex", "claude", "forge", "droid", "opencode", "antigravity"]
   return [agent]
 
 
@@ -215,7 +217,7 @@ def build_parser() -> argparse.ArgumentParser:
   parser.add_argument(
     "--agent",
     default=DEFAULT_AGENT,
-    choices=["codex", "codex-legacy", "claude", "forge", "droid", "droid-compat", "opencode", "all"],
+    choices=["codex", "codex-legacy", "claude", "forge", "droid", "droid-compat", "opencode", "antigravity", "all"],
     help="Agent target to deploy for. Defaults to codex.",
   )
   parser.add_argument(
