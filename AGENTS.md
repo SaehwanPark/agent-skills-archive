@@ -17,3 +17,7 @@
 - Preview deployment: `uv run deploy-skills --dry-run --skill <skill-name>`
 - Run tests: `uv run python -m unittest discover -s tests`
 - For skill creation or maintenance workflow, use `.agents/skills/agent-skills-archive-orchestrator/SKILL.md` and `docs/harness/agent-skills-archive/team-spec.md`.
+
+## Etc.
+
+- When necessary CLI tools (e.g., `uv`, `gh`, `hf`) are not found, to address path config issues, try `which <tool>` to figure out right paths.
