@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-import shutil
 import subprocess
 import tempfile
 import unittest
@@ -168,21 +167,32 @@ class DeployTests(unittest.TestCase):
       self.assertEqual(exit_code, 0)
       input_mock.assert_not_called()
 
-  def test_repo_launcher_does_not_require_uv_on_path(self) -> None:
-    uv_bin = shutil.which("uv")
-    self.assertIsNotNone(uv_bin)
+  def test_repo_launcher_resolves_uv_from_path(self) -> None:
     repo = Path(__file__).resolve().parents[1]
 
-    result = subprocess.run(
-      [str(repo / "bin" / "deploy-skills"), "--list-skills"],
-      cwd=tempfile.gettempdir(),
-      env={"PATH": "/usr/bin:/bin", "UV_BIN": uv_bin or ""},
-      check=True,
-      capture_output=True,
-      text=True,
-    )
+    with tempfile.TemporaryDirectory() as temp:
+      bin_dir = Path(temp) / "bin"
+      bin_dir.mkdir()
+      fake_uv = bin_dir / "uv"
+      fake_uv.write_text(
+        "#!/bin/sh\n"
+        "printf '%s\\n' \"$*\"\n"
+        "printf 'fp-developer\\tFake skill output.\\n'\n",
+        encoding="utf-8",
+      )
+      fake_uv.chmod(0o755)
+
+      result = subprocess.run(
+        [str(repo / "bin" / "deploy-skills"), "--list-skills"],
+        cwd=tempfile.gettempdir(),
+        env={"PATH": f"{bin_dir}:/usr/bin:/bin"},
+        check=True,
+        capture_output=True,
+        text=True,
+      )
 
     self.assertIn("fp-developer\t", result.stdout)
+    self.assertIn(f"run --project {repo} deploy-skills --list-skills", result.stdout)
 
 
 if __name__ == "__main__":
