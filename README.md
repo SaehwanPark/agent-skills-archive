@@ -22,6 +22,7 @@ reliably across projects.
 | `code-reviewer` | Reviews code changes for bugs, security issues, performance risks, maintainability problems, and edge cases. | Gives a structured review with severity-ranked findings instead of vague feedback. |
 | `fp-developer` | Applies a functional-first workflow with explicit state, pure core logic, typed boundaries, and tests-as-specs. | Helps keep complex code predictable and easier to test. |
 | `plan-designer` | Turns an ambiguous implementation request into a bounded, decision-complete plan. | Reduces missed requirements before editing starts. |
+| `preferred-workflow` | Guides checkpoint continuation, feature work, and refactors through a shared branch-test-review workflow. | Gives a reusable default for moving from context recovery to review-ready delivery. |
 | `spec-driven-developer` | Keeps `SPEC.md`, `ARCHITECTURE.md`, and `CHANGELOG.md` aligned with implementation. | Preserves design intent and release history as code changes. |
 | `release-preparer` | Prepares a private development repo for a clean public release. | Helps isolate legacy code and streamline release readiness. |
 | `end-user-xp-improver` | Shapes product and interface decisions around user pain points and workflows. | Improves defaults and interactions from the end user's point of view. |
