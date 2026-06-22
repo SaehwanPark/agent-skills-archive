@@ -77,6 +77,12 @@ Examples of assumptions:
 
 Plans should choose the smallest change that satisfies the task.
 
+Apply the `simple-code-writer` hierarchy when selecting the implementation approach:
+prefer elimination or deferral when scope permits, then standard-library and platform
+capabilities, then a domain-appropriate existing dependency, and only then custom code.
+Every proposed dependency, abstraction, or cross-module change must solve a concrete
+requirement in the plan.
+
 Avoid introducing new dependencies, new abstractions, broad rewrites, public API changes, formatting-only edits, drive-by cleanup, and multi-module refactors unless explicitly requested.
 
 ### Name likely edit targets
