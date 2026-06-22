@@ -23,6 +23,14 @@ The core goal is to guide future maintainers (including engineers who are new to
 - The task is purely configuration-based (e.g., updating CI/CD YAML files, package dependencies, or build scripts) where code commenting guidelines do not apply.
 - You are strictly running static analysis/linter tools without editing or reviewing code.
 
+## Integration with implementation skills
+
+Use `simple-code-writer` for implementation structure and this skill for comment and
+docstring decisions. Do not broaden the agreed change or redesign otherwise clear code
+merely to reduce comment count. When a small in-scope naming or structure change makes a
+comment unnecessary, prefer that change; otherwise document the non-obvious rationale or
+constraint directly.
+
 ## Required Inputs
 
 - The source code files being written, modified, or reviewed.

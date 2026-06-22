@@ -19,6 +19,7 @@ reliably across projects.
 
 | Skill | What it does | Why it helps |
 | --- | --- | --- |
+| `simple-code-writer` | Applies simplicity-first defaults when writing, editing, or refactoring code. | Produces the smallest correct implementation while accounting for readability, maintenance, performance, and operational risk. |
 | `code-reviewer` | Reviews code changes for bugs, security issues, performance risks, maintainability problems, and edge cases. | Gives a structured review with severity-ranked findings instead of vague feedback. |
 | `fp-developer` | Applies a functional-first workflow with explicit state, pure core logic, typed boundaries, and tests-as-specs. | Helps keep complex code predictable and easier to test. |
 | `plan-designer` | Turns an ambiguous implementation request into a bounded, decision-complete plan. | Reduces missed requirements before editing starts. |

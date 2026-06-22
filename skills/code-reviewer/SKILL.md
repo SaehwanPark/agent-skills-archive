@@ -24,10 +24,15 @@ description: Review working-branch code changes for bugs, security, performance,
 2. Review for bugs, security issues, performance regressions, maintainability problems, and edge cases.
 3. Treat changed code as suspect until the surrounding invariants prove it safe.
 4. Prefer concrete failures over style opinions; if a concern is hypothetical, state the condition that would trigger it.
-5. Assign one severity per finding: `Critical`, `High`, `Medium`, or `Low`.
-6. For every finding, include the file and line number or the relevant section, what is wrong, and how to fix it.
-7. Separate blocking correctness issues from lower-risk cleanup items.
-8. If no actionable issues are found, say so explicitly and note any residual test or coverage gaps.
+5. Apply `simple-code-writer` when evaluating complexity. Report an abstraction,
+   dependency, indirection, or generalization only when it creates a concrete correctness,
+   maintenance, performance, or operational cost; do not report simplicity preferences as
+   defects.
+6. Recommend the smallest safe correction that addresses the demonstrated problem.
+7. Assign one severity per finding: `Critical`, `High`, `Medium`, or `Low`.
+8. For every finding, include the file and line number or the relevant section, what is wrong, and how to fix it.
+9. Separate blocking correctness issues from lower-risk cleanup items.
+10. If no actionable issues are found, say so explicitly and note any residual test or coverage gaps.
 
 ## Review Checklist
 

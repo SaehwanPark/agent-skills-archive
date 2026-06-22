@@ -28,7 +28,7 @@ Use it when you need to:
 4. Select the smallest useful target slice.
 5. **Branch setup** — create or confirm the working branch (see below).
 6. Write or update failing tests before implementation when behavior is changing.
-7. Implement the slice completely, without stubs or placeholders.
+7. Apply `simple-code-writer` and implement the slice completely, without stubs or placeholders.
 8. Run the project's tests and checks for the slice.
 9. Update relevant docs or lightweight project state files when they exist.
 10. **PR handoff** — commit, push, and open a PR when approval allows (see below).
@@ -170,6 +170,7 @@ When git exists but no PR host is available:
 This skill composes well with:
 
 - `plan-designer` for turning a request into a bounded implementation plan
+- `simple-code-writer` for the baseline implementation and refactoring decisions
 - `spec-driven-developer` for keeping project state and documentation aligned
 - `code-reviewer` for post-implementation review (required in the review loop)
 - `babysit` for CI and comment triage after the review loop

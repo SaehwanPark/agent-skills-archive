@@ -40,6 +40,12 @@ The pure core contains domain logic, validation, transformations, scoring, model
 
 The impure edge contains filesystem access, database calls, logging, randomness, network calls, CLI parsing, environment reads, framework adapters, UI adapters, clock access, and process orchestration.
 
+Apply this architecture proportionally with `simple-code-writer`. Functional structure is
+a means to make state, effects, and contracts clearer, not an unconditional target. Do
+not introduce wrappers, domain types, pure-core boundaries, or transformation pipelines
+when they add more ceremony and indirection than the concrete problem warrants. Preserve
+direct, idiomatic code when its state and effects are already obvious and testable.
+
 ## Functional-first principles
 
 ### Explicit state
