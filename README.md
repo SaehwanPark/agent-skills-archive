@@ -20,6 +20,7 @@ reliably across projects.
 | Skill | What it does | Why it helps |
 | --- | --- | --- |
 | `simple-code-writer` | Applies simplicity-first defaults when writing, editing, or refactoring code. | Produces the smallest correct implementation while accounting for readability, maintenance, performance, and operational risk. |
+| `code-commenter` | Applies code-commenting guidance focused on intent, rationale, assumptions, constraints, and domain context. | Helps future maintainers understand non-obvious decisions without restating code mechanics. |
 | `code-reviewer` | Reviews code changes for bugs, security issues, performance risks, maintainability problems, and edge cases. | Gives a structured review with severity-ranked findings instead of vague feedback. |
 | `fp-developer` | Applies a functional-first workflow with explicit state, pure core logic, typed boundaries, and tests-as-specs. | Helps keep complex code predictable and easier to test. |
 | `plan-designer` | Turns an ambiguous implementation request into a bounded, decision-complete plan. | Reduces missed requirements before editing starts. |
@@ -79,9 +80,9 @@ If `uv` is not on `PATH`, use the repo-local launcher:
 ./bin/deploy-skills --all
 ```
 
-By default, the deploy command installs into the current agent's personal skill
-location. You can also target a project or a different agent with the deploy flags
-described below.
+By default, the deploy command installs for Codex at the standard personal skill
+location. You can also target a project or request compatibility links for another
+agent with the flags described below.
 
 ## Archive And Harness
 
@@ -112,14 +113,29 @@ uv run python -m unittest discover -s tests
 
 ## Deploy Targets
 
-| Agent | Personal | Project |
+Every deployment copies each selected skill once to a standard directory:
+
+| Scope | Canonical destination |
+| --- | --- |
+| Personal | `~/.agents/skills/<skill-name>` |
+| Project | `<project>/.agents/skills/<skill-name>` |
+
+Agent-specific locations contain relative links to those canonical copies only when
+the agent does not discover the standard directory natively:
+
+| Agent | Personal compatibility location | Project compatibility location |
 | --- | --- | --- |
-| Codex | `~/.agents/skills` | `.agents/skills` |
+| Codex | None; uses the canonical location | None; uses the canonical location |
 | Claude Code | `~/.claude/skills` | `.claude/skills` |
-| ForgeCode | `~/forge/skills` | `.forge/skills` |
+| ForgeCode | None; discovers `~/.agents/skills` | `.forge/skills` |
 | Droid | `~/.factory/skills` | `.factory/skills` |
-| OpenCode | `~/.config/opencode/skills` | `.opencode/skills` |
-| AntiGravity CLI | `~/.gemini/skills` | `.agents/skills` |
+| OpenCode | None; discovers the canonical location | None; discovers the canonical location |
+| AntiGravity CLI | `~/.gemini/skills` | None; uses the canonical location |
+
+The compatibility aliases `codex-legacy` and `droid-compat` link from
+`$CODEX_HOME/skills` and project `.agent/skills`, respectively. A link is created for
+each selected skill rather than for the entire skills root, so unrelated agent-specific
+skills remain untouched.
 
 Copy everything explicitly:
 
@@ -138,6 +154,9 @@ Install for Claude Code:
 ```bash
 uv run deploy-skills --agent claude --all
 ```
+
+This copies each selected skill to `~/.agents/skills` and links the corresponding
+entry under `~/.claude/skills` back to that canonical copy.
 
 Install into the current repo for Codex:
 
@@ -165,14 +184,22 @@ Preview destination paths:
 uv run deploy-skills --list-targets --agent all --scope project
 ```
 
+Target output labels the canonical `copy` destination and any agent-specific `link`
+destinations.
+
 ## Safety
 
-The deploy command copies skill directories. It fails if a destination already exists,
-unless you explicitly replace it:
+The deploy command preflights all selected destinations before writing. It fails if a
+canonical destination or conflicting compatibility entry already exists unless you
+explicitly replace it:
 
 ```bash
 uv run deploy-skills --force
 ```
+
+Use `--force` to migrate old agent-specific copied directories to links. Correct links
+are left unchanged. Replacement removes the link itself, never the canonical directory
+to which it points.
 
 Use `--dry-run` before writing:
 

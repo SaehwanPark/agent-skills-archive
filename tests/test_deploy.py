@@ -12,8 +12,10 @@ from agent_skills_archive.deploy import (
   DeployError,
   UserCancel,
   choose_skills,
+  deploy_operations,
   deploy_skill,
   discover_skills,
+  plan_deployment,
   run,
   select_skills,
   target_for,
@@ -69,18 +71,180 @@ class DeployTests(unittest.TestCase):
       project = Path(temp).resolve()
 
       self.assertEqual(target_for("codex", "project", project).path, project / ".agents" / "skills")
-      self.assertEqual(target_for("claude", "project", project).path, project / ".claude" / "skills")
-      self.assertEqual(target_for("forge", "project", project).path, project / ".forge" / "skills")
-      self.assertEqual(target_for("droid", "project", project).path, project / ".factory" / "skills")
-      self.assertEqual(target_for("droid-compat", "project", project).path, project / ".agent" / "skills")
-      self.assertEqual(target_for("opencode", "project", project).path, project / ".opencode" / "skills")
+      self.assertEqual(
+        target_for("claude", "project", project).reference_path,
+        project / ".claude" / "skills",
+      )
+      self.assertEqual(
+        target_for("forge", "project", project).reference_path,
+        project / ".forge" / "skills",
+      )
+      self.assertEqual(
+        target_for("droid", "project", project).reference_path,
+        project / ".factory" / "skills",
+      )
+      self.assertEqual(
+        target_for("droid-compat", "project", project).reference_path,
+        project / ".agent" / "skills",
+      )
+      self.assertIsNone(target_for("opencode", "project", project).reference_path)
+
+  def test_native_personal_targets_do_not_create_references(self) -> None:
+    with tempfile.TemporaryDirectory() as temp:
+      project = Path(temp)
+
+      self.assertIsNone(target_for("codex", "personal", project).reference_path)
+      self.assertIsNone(target_for("forge", "personal", project).reference_path)
+      self.assertIsNone(target_for("opencode", "personal", project).reference_path)
 
   def test_codex_legacy_uses_codex_home(self) -> None:
     with tempfile.TemporaryDirectory() as temp:
       with mock.patch.dict(os.environ, {"CODEX_HOME": temp}):
         target = target_for("codex-legacy", "personal", Path.cwd())
 
-      self.assertEqual(target.path, Path(temp) / "skills")
+      self.assertEqual(target.reference_path, Path(temp) / "skills")
+
+  def test_claude_deploys_canonical_copy_and_relative_reference(self) -> None:
+    with tempfile.TemporaryDirectory() as temp:
+      root = Path(temp)
+      source = root / "source"
+      source.mkdir()
+      skill_path = write_skill(source, "example")
+      (skill_path / "references").mkdir()
+      (skill_path / "references" / "guide.md").write_text("guide", encoding="utf-8")
+      skill = discover_skills(source)[0]
+      target = target_for("claude", "project", root / "project")
+
+      operations = plan_deployment([skill], [target])
+      deploy_operations(operations, dry_run=False, force=False)
+
+      canonical = target.path / "example"
+      reference = target.reference_path / "example"  # type: ignore[operator]
+      self.assertTrue(canonical.is_dir())
+      self.assertTrue(reference.is_symlink())
+      self.assertFalse(reference.readlink().is_absolute())
+      self.assertEqual((reference / "references" / "guide.md").read_text(encoding="utf-8"), "guide")
+
+  def test_all_targets_copy_canonical_skill_once(self) -> None:
+    with tempfile.TemporaryDirectory() as temp:
+      root = Path(temp)
+      source = root / "source"
+      source.mkdir()
+      write_skill(source, "example")
+      skill = discover_skills(source)[0]
+      targets = [
+        target_for(agent, "project", root / "project")
+        for agent in ["codex", "claude", "forge", "droid", "opencode", "antigravity"]
+      ]
+
+      operations = plan_deployment([skill], targets)
+
+      self.assertEqual(sum(operation.kind == "copy" for operation in operations), 1)
+      self.assertEqual(sum(operation.kind == "link" for operation in operations), 3)
+
+  def test_existing_correct_reference_is_idempotent(self) -> None:
+    with tempfile.TemporaryDirectory() as temp:
+      root = Path(temp)
+      source = root / "source"
+      source.mkdir()
+      write_skill(source, "example")
+      skill = discover_skills(source)[0]
+      target = target_for("claude", "project", root / "project")
+      operations = plan_deployment([skill], [target])
+      deploy_operations(operations, dry_run=False, force=False)
+
+      link_operation = next(operation for operation in operations if operation.kind == "link")
+      messages = deploy_operations([link_operation], dry_run=False, force=False)
+
+      self.assertIn("already linked", messages[0])
+
+  def test_force_replaces_copied_compatibility_directory_with_reference(self) -> None:
+    with tempfile.TemporaryDirectory() as temp:
+      root = Path(temp)
+      source = root / "source"
+      source.mkdir()
+      write_skill(source, "example")
+      skill = discover_skills(source)[0]
+      target = target_for("claude", "project", root / "project")
+      reference = target.reference_path / "example"  # type: ignore[operator]
+      reference.mkdir(parents=True)
+      (reference / "old.txt").write_text("old", encoding="utf-8")
+
+      operations = plan_deployment([skill], [target])
+      deploy_operations(operations, dry_run=False, force=True)
+
+      self.assertTrue(reference.is_symlink())
+      self.assertFalse((reference / "old.txt").exists())
+
+  def test_preflight_prevents_writes_when_later_operation_conflicts(self) -> None:
+    with tempfile.TemporaryDirectory() as temp:
+      root = Path(temp)
+      source = root / "source"
+      source.mkdir()
+      write_skill(source, "example")
+      skill = discover_skills(source)[0]
+      target = target_for("claude", "project", root / "project")
+      reference = target.reference_path / "example"  # type: ignore[operator]
+      reference.mkdir(parents=True)
+      operations = plan_deployment([skill], [target])
+
+      with self.assertRaisesRegex(DeployError, "already exists"):
+        deploy_operations(operations, dry_run=False, force=False)
+
+      self.assertFalse((target.path / "example").exists())
+
+  def test_dry_run_does_not_create_canonical_copy_or_reference(self) -> None:
+    with tempfile.TemporaryDirectory() as temp:
+      root = Path(temp)
+      source = root / "source"
+      source.mkdir()
+      write_skill(source, "example")
+      skill = discover_skills(source)[0]
+      target = target_for("claude", "project", root / "project")
+
+      messages = deploy_operations(
+        plan_deployment([skill], [target]),
+        dry_run=True,
+        force=False,
+      )
+
+      self.assertEqual(len(messages), 2)
+      self.assertIn("[dry-run] copy", messages[0])
+      self.assertIn("[dry-run] link", messages[1])
+      self.assertFalse(target.path.exists())
+      self.assertFalse(target.reference_path.exists())  # type: ignore[union-attr]
+
+  def test_force_replaces_wrong_and_broken_references(self) -> None:
+    for existing_target in ["elsewhere", "missing"]:
+      with self.subTest(existing_target=existing_target), tempfile.TemporaryDirectory() as temp:
+        root = Path(temp)
+        source = root / "source"
+        source.mkdir()
+        write_skill(source, "example")
+        skill = discover_skills(source)[0]
+        target = target_for("claude", "project", root / "project")
+        reference = target.reference_path / "example"  # type: ignore[operator]
+        reference.parent.mkdir(parents=True)
+        reference.symlink_to(existing_target, target_is_directory=True)
+
+        deploy_operations(plan_deployment([skill], [target]), dry_run=False, force=True)
+
+        self.assertTrue(reference.is_symlink())
+        self.assertEqual(reference.resolve(), (target.path / "example").resolve())
+
+  def test_readme_skill_table_matches_archive(self) -> None:
+    repo = Path(__file__).resolve().parents[1]
+    expected = {skill.name for skill in discover_skills(repo / "skills")}
+    readme = (repo / "README.md").read_text(encoding="utf-8")
+    skills_section = readme.split("## Skills in this archive", 1)[1]
+    section = skills_section.split("## What a skill looks like", 1)[0]
+    documented = {
+      line.split("`", 2)[1]
+      for line in section.splitlines()
+      if line.startswith("| `")
+    }
+
+    self.assertEqual(documented, expected)
 
   def test_dry_run_does_not_copy(self) -> None:
     with tempfile.TemporaryDirectory() as temp:
@@ -119,6 +283,31 @@ class DeployTests(unittest.TestCase):
 
       self.assertEqual(exit_code, 0)
       self.assertIn("example\tExample skill.", stdout.getvalue())
+
+  def test_run_lists_canonical_and_reference_targets(self) -> None:
+    with tempfile.TemporaryDirectory() as temp:
+      root = Path(temp)
+      source = root / "source"
+      source.mkdir()
+      write_skill(source, "example")
+
+      with mock.patch("sys.stdout", new=StringIO()) as stdout:
+        exit_code = run([
+          "--source",
+          str(source),
+          "--agent",
+          "claude",
+          "--scope",
+          "project",
+          "--project",
+          str(root / "project"),
+          "--list-targets",
+        ])
+
+      output = stdout.getvalue()
+      self.assertEqual(exit_code, 0)
+      self.assertIn("canonical\tproject\tcopy", output)
+      self.assertIn("claude\tproject\tlink", output)
 
   def test_choose_skills_selects_multiple(self) -> None:
     with tempfile.TemporaryDirectory() as temp:

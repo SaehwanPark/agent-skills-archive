@@ -25,6 +25,15 @@ class Target:
   agent: str
   scope: str
   path: Path
+  reference_path: Path | None = None
+
+
+@dataclass(frozen=True)
+class Operation:
+  kind: str
+  skill: Skill
+  source: Path
+  destination: Path
 
 
 class DeployError(RuntimeError):
@@ -50,35 +59,39 @@ def _home() -> Path:
 def target_for(agent: str, scope: str, project: Path) -> Target:
   project = project.expanduser().resolve()
   home = _home()
+  canonical = home / ".agents" / "skills" if scope == "personal" else project / ".agents" / "skills"
+  reference: Path | None = None
 
   if agent == "codex":
-    path = home / ".agents" / "skills" if scope == "personal" else project / ".agents" / "skills"
+    pass
   elif agent == "codex-legacy":
     if scope != "personal":
       raise DeployError("codex-legacy only supports --scope personal")
-    path = Path(os.environ.get("CODEX_HOME", home / ".codex")).expanduser() / "skills"
+    reference = Path(os.environ.get("CODEX_HOME", home / ".codex")).expanduser() / "skills"
   elif agent in ("antigravity", "gemini"):
-    path = home / ".gemini" / "skills" if scope == "personal" else project / ".agents" / "skills"
+    if scope == "personal":
+      reference = home / ".gemini" / "skills"
   elif agent == "claude":
-    path = home / ".claude" / "skills" if scope == "personal" else project / ".claude" / "skills"
+    reference = (
+      home / ".claude" / "skills" if scope == "personal" else project / ".claude" / "skills"
+    )
   elif agent == "forge":
-    path = home / "forge" / "skills" if scope == "personal" else project / ".forge" / "skills"
+    if scope == "project":
+      reference = project / ".forge" / "skills"
   elif agent == "droid":
-    path = home / ".factory" / "skills" if scope == "personal" else project / ".factory" / "skills"
+    reference = (
+      home / ".factory" / "skills" if scope == "personal" else project / ".factory" / "skills"
+    )
   elif agent == "droid-compat":
     if scope != "project":
       raise DeployError("droid-compat only supports --scope project")
-    path = project / ".agent" / "skills"
+    reference = project / ".agent" / "skills"
   elif agent == "opencode":
-    path = (
-      home / ".config" / "opencode" / "skills"
-      if scope == "personal"
-      else project / ".opencode" / "skills"
-    )
+    pass
   else:
     raise DeployError(f"unknown agent: {agent}")
 
-  return Target(agent=agent, scope=scope, path=path)
+  return Target(agent=agent, scope=scope, path=canonical, reference_path=reference)
 
 
 def agents_for(agent: str) -> list[str]:
@@ -183,20 +196,92 @@ def ignore_patterns(_directory: str, names: list[str]) -> set[str]:
   return {name for name in names if name in IGNORED_NAMES}
 
 
-def deploy_skill(skill: Skill, target: Target, *, dry_run: bool, force: bool) -> str:
-  destination = target.path / skill.name
-  if destination.exists() and not force:
-    raise DeployError(f"{destination} already exists; pass --force to replace it")
+def _lexists(path: Path) -> bool:
+  return path.exists() or path.is_symlink()
+
+
+def _link_points_to(destination: Path, source: Path) -> bool:
+  return (
+    destination.is_symlink()
+    and destination.resolve(strict=False) == source.resolve(strict=False)
+  )
+
+
+def plan_deployment(skills: Sequence[Skill], targets: Sequence[Target]) -> list[Operation]:
+  operations: list[Operation] = []
+  seen: set[tuple[str, Path]] = set()
+  for target in targets:
+    for skill in skills:
+      copy_destination = target.path / skill.name
+      copy_key = ("copy", copy_destination)
+      if copy_key not in seen:
+        operations.append(Operation("copy", skill, skill.path, copy_destination))
+        seen.add(copy_key)
+
+      if target.reference_path is not None:
+        link_destination = target.reference_path / skill.name
+        link_key = ("link", link_destination)
+        if link_key not in seen:
+          operations.append(Operation("link", skill, copy_destination, link_destination))
+          seen.add(link_key)
+  return operations
+
+
+def validate_operations(operations: Sequence[Operation], *, force: bool) -> None:
+  for operation in operations:
+    if not _lexists(operation.destination):
+      continue
+    if operation.kind == "link" and _link_points_to(operation.destination, operation.source):
+      continue
+    if not force:
+      raise DeployError(f"{operation.destination} already exists; pass --force to replace it")
+
+
+def _remove_destination(destination: Path) -> None:
+  if destination.is_symlink() or destination.is_file():
+    destination.unlink()
+  else:
+    shutil.rmtree(destination)
+
+
+def execute_operation(operation: Operation, *, dry_run: bool, force: bool) -> str:
+  destination = operation.destination
+  exists = _lexists(destination)
+
+  if operation.kind == "link" and _link_points_to(destination, operation.source):
+    return f"already linked {destination} -> {operation.source}"
 
   if dry_run:
-    action = "replace" if destination.exists() else "copy"
-    return f"[dry-run] {action} {skill.path} -> {destination}"
+    action = f"replace-{operation.kind}" if exists else operation.kind
+    return f"[dry-run] {action} {operation.source} -> {destination}"
 
-  target.path.mkdir(parents=True, exist_ok=True)
-  if destination.exists():
-    shutil.rmtree(destination)
-  shutil.copytree(skill.path, destination, ignore=ignore_patterns)
-  return f"copied {skill.name} -> {destination}"
+  destination.parent.mkdir(parents=True, exist_ok=True)
+  if exists:
+    if not force:
+      raise DeployError(f"{destination} already exists; pass --force to replace it")
+    _remove_destination(destination)
+
+  if operation.kind == "copy":
+    shutil.copytree(operation.source, destination, ignore=ignore_patterns)
+    return f"copied {operation.skill.name} -> {destination}"
+
+  relative_source = os.path.relpath(operation.source, destination.parent)
+  try:
+    destination.symlink_to(relative_source, target_is_directory=True)
+  except OSError as error:
+    raise DeployError(f"could not link {destination} -> {operation.source}: {error}") from error
+  return f"linked {destination} -> {operation.source}"
+
+
+def deploy_operations(operations: Sequence[Operation], *, dry_run: bool, force: bool) -> list[str]:
+  validate_operations(operations, force=force)
+  return [execute_operation(operation, dry_run=dry_run, force=force) for operation in operations]
+
+
+def deploy_skill(skill: Skill, target: Target, *, dry_run: bool, force: bool) -> str:
+  operation = Operation("copy", skill, skill.path, target.path / skill.name)
+  validate_operations([operation], force=force)
+  return execute_operation(operation, dry_run=dry_run, force=force)
 
 
 def print_skills(skills: Iterable[Skill]) -> None:
@@ -205,9 +290,14 @@ def print_skills(skills: Iterable[Skill]) -> None:
 
 
 def print_targets(agent: str, scope: str, project: Path) -> None:
-  for agent_name in agents_for(agent):
-    target = target_for(agent_name, scope, project)
-    print(f"{target.agent}\t{target.scope}\t{target.path}")
+  targets = [target_for(agent_name, scope, project) for agent_name in agents_for(agent)]
+  canonical_paths: set[Path] = set()
+  for target in targets:
+    if target.path not in canonical_paths:
+      print(f"canonical\t{target.scope}\tcopy\t{target.path}")
+      canonical_paths.add(target.path)
+    if target.reference_path is not None:
+      print(f"{target.agent}\t{target.scope}\tlink\t{target.reference_path}\t{target.path}")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -245,8 +335,8 @@ def build_parser() -> argparse.ArgumentParser:
     help="Skill name to deploy directly. May be passed multiple times and bypasses the chooser.",
   )
   parser.add_argument("--all", action="store_true", help="Deploy every discovered skill.")
-  parser.add_argument("--dry-run", action="store_true", help="Show what would be copied without writing files.")
-  parser.add_argument("--force", action="store_true", help="Replace existing destination skill directories.")
+  parser.add_argument("--dry-run", action="store_true", help="Show deployment operations without writing files.")
+  parser.add_argument("--force", action="store_true", help="Replace conflicting destination entries.")
   parser.add_argument("--list-skills", action="store_true", help="List discovered skills and exit.")
   parser.add_argument("--list-targets", action="store_true", help="List resolved destination directories and exit.")
   return parser
@@ -275,10 +365,13 @@ def run(argv: Sequence[str] | None = None) -> int:
         raise DeployError("chooser mode requires an interactive terminal; use --skill or --all")
       selected = choose_skills(skills)
 
-    for agent_name in agents_for(args.agent):
-      target = target_for(agent_name, args.scope, args.project)
-      for skill in selected:
-        print(deploy_skill(skill, target, dry_run=args.dry_run, force=args.force))
+    targets = [
+      target_for(agent_name, args.scope, args.project)
+      for agent_name in agents_for(args.agent)
+    ]
+    operations = plan_deployment(selected, targets)
+    for message in deploy_operations(operations, dry_run=args.dry_run, force=args.force):
+      print(message)
     return 0
   except UserCancel as error:
     print(f"error: {error}", file=sys.stderr)
