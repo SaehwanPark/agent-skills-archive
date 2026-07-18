@@ -1,5 +1,11 @@
 # Mojo functional-first guidance
 
+## Contents
+
+- Documentation freshness and recommended tooling
+- Rules: types, ownership, state, failure, effects, Python, GPU work, and syntax
+- Commands
+
 ## Documentation freshness rule
 
 Mojo is evolving quickly. Before writing or reviewing Mojo code, consult the current docs at `https://mojolang.org/docs/` whenever syntax, ownership, lifetimes, testing, packaging, Python interop, or error behavior matters.

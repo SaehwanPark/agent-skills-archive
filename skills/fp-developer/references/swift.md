@@ -1,5 +1,11 @@
 # Swift functional-first guidance
 
+## Contents
+
+- Recommended tooling
+- Rules: value types, domains, absence, failure, effects, concurrency, and tests
+- Commands
+
 ## Recommended tooling
 
 Use:
