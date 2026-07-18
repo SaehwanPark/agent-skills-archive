@@ -19,18 +19,18 @@ reliably across projects.
 
 | Skill | What it does | Why it helps |
 | --- | --- | --- |
-| `simple-code-writer` | Applies simplicity-first defaults when writing, editing, or refactoring code. | Produces the smallest correct implementation while accounting for readability, maintenance, performance, and operational risk. |
-| `code-commenter` | Applies code-commenting guidance focused on intent, rationale, assumptions, constraints, and domain context. | Helps future maintainers understand non-obvious decisions without restating code mechanics. |
-| `code-reviewer` | Reviews code changes for bugs, security issues, performance risks, maintainability problems, and edge cases. | Gives a structured review with severity-ranked findings instead of vague feedback. |
-| `fp-developer` | Applies a functional-first workflow with explicit state, pure core logic, typed boundaries, and tests-as-specs. | Helps keep complex code predictable and easier to test. |
-| `plan-designer` | Turns an ambiguous implementation request into a bounded, decision-complete plan. | Reduces missed requirements before editing starts. |
-| `preferred-workflow` | Guides checkpoint continuation, feature work, and refactors through a shared branch-test-review workflow. | Gives a reusable default for moving from context recovery to review-ready delivery. |
-| `spec-driven-developer` | Keeps `SPEC.md`, `ARCHITECTURE.md`, and `CHANGELOG.md` aligned with implementation. | Preserves design intent and release history as code changes. |
-| `release-preparer` | Prepares a private development repo for a clean public release. | Helps isolate legacy code and streamline release readiness. |
-| `end-user-xp-improver` | Shapes product and interface decisions around user pain points and workflows. | Improves defaults and interactions from the end user's point of view. |
-| `lesson-documenter` | Captures debugging lessons, setup traps, and project-specific gotchas. | Prevents the same operational mistakes from being rediscovered later. |
-| `wayback-link-fallback` | Recovers archived copies of dead or unreliable web references. | Keeps research and documentation work moving when source links fail. |
-| `call-r-lib-in-python` | Helps Python code call R packages through `rpy2` with reproducible packaging and safer data handling. | Makes mixed Python/R workflows less brittle. |
+| `simple-code-writer` | Chooses the smallest correct implementation or refactor. | Preserves contracts while avoiding speculative abstractions and dependencies. |
+| `code-commenter` | Adds or reviews comments that preserve rationale, invariants, and public contracts. | Gives maintainers non-obvious context without narrating code mechanics. |
+| `code-reviewer` | Reviews diffs and PRs for concrete production risks. | Produces evidence-based, severity-ranked findings and minimizes false positives. |
+| `fp-developer` | Applies functional-first design to Python, Rust, Swift, Kotlin, and Mojo. | Makes state, effects, failures, types, and testable domain logic explicit. |
+| `plan-designer` | Turns coding requests into bounded, decision-complete implementation plans. | Removes design guesswork while defining tests, non-goals, and stop conditions. |
+| `preferred-workflow` | Guides continuations, features, fixes, and refactors through branch and PR handoff. | Provides a safe default workflow with review that can be explicitly opted out of. |
+| `spec-driven-developer` | Keeps lightweight project state aligned with implementation. | Reconciles specifications, architecture, and changelog history with evidence. |
+| `release-preparer` | Prepares private repositories and packages for public release. | Separates curation, validation, approval-gated publication, and ecosystem details. |
+| `end-user-xp-improver` | Improves user-facing workflows, defaults, errors, recovery, and accessibility. | Grounds interface decisions in a target audience and representative journeys. |
+| `lesson-documenter` | Captures verified, recurring development and operations traps. | Preserves causes and prevention without accumulating debugging diaries. |
+| `wayback-link-fallback` | Recovers version-appropriate archived web evidence. | Handles dead or changed sources while preserving provenance and current-truth checks. |
+| `call-r-lib-in-python` | Integrates R packages and models into Python through `rpy2`. | Makes runtime discovery, dependencies, conversion, fitting, and extraction explicit. |
 
 ## What a skill looks like
 
@@ -52,6 +52,10 @@ description: Use when ...
 The `name` must match the directory name. Keep the top-level `SKILL.md` focused and move
 long examples or reference material into `references/` or `examples/` inside the skill
 directory.
+
+All trigger conditions belong in the frontmatter description because it is available
+before the skill loads. Keep `SKILL.md` to the core workflow and directly link every
+bundled Markdown resource so agents can load optional detail only when it applies.
 
 ## Using the archive
 
@@ -110,6 +114,10 @@ uv run deploy-skills --list-skills
 uv run deploy-skills --dry-run --skill <skill-name>
 uv run python -m unittest discover -s tests
 ```
+
+The test suite validates canonical frontmatter, portable skill names, a 200-line budget
+for each `SKILL.md`, local Markdown links, and direct discoverability of bundled Markdown
+resources. It uses only the project's existing standard-library tooling.
 
 ## Deploy Targets
 
