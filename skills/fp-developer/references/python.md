@@ -1,5 +1,11 @@
 # Python functional-first guidance
 
+## Contents
+
+- Recommended tooling
+- Rules: typing, boundary validation, domain models, mutation, failure, and pure logic
+- Commands
+
 ## Recommended tooling
 
 Use:

@@ -1,5 +1,11 @@
 # Kotlin functional-first guidance
 
+## Contents
+
+- Recommended tooling
+- Rules: values, domains, absence, failure, effects, coroutines, and tests
+- Commands
+
 ## Recommended tooling
 
 Use:

@@ -1,75 +1,56 @@
 ---
 name: lesson-documenter
-description: Capture development friction, debugging lessons, setup traps, and project-specific gotchas in a durable lessons document so future contributors avoid repeating them.
+description: Use when setup, implementation, testing, debugging, deployment, or tooling reveals a non-obvious recurring trap whose cause, verified resolution, and prevention should be preserved for future contributors.
 ---
 
-# lesson-documenter
+# Lesson Documenter
 
-## Purpose
+Record durable, verified knowledge that would save future contributors meaningful time.
+Do not document routine mistakes, blame, speculation, or facts already obvious from code,
+tests, and standard tooling.
 
-Use this skill when development reveals non-obvious friction that future agents or contributors should not have to rediscover.
+## Selection criteria
 
-Primary goals:
+Document a lesson when it is likely to recur and involves an unexpected prerequisite,
+version or environment mismatch, misleading failure, dead-end diagnosis, integration
+constraint, generated/cache/migration behavior, or newly discovered domain assumption.
 
-- Record practical lessons from setup, implementation, testing, debugging, and deployment.
-- Preserve the cause, fix, and prevention advice.
-- Keep lessons easy to scan and close to the project.
-- Grow documentation structure only when the project needs it.
-
-## What to Document
-
-Document friction when it is likely to recur or is not obvious from code, tests, or standard tooling.
-
-Good candidates:
-
-- Setup steps that failed or required undocumented prerequisites.
-- Dependency, environment, or version mismatches.
-- Test failures with surprising causes.
-- Debugging paths that looked plausible but were dead ends.
-- Integration constraints between modules, services, or tools.
-- Generated files, caches, migrations, or build artifacts that caused confusion.
-- Domain assumptions that were discovered while implementing.
-
-Do not document every routine mistake. Prefer lessons that would save meaningful future time.
-
-## Where to Put Lessons
-
-First inspect the repo for an existing convention, such as `LESSONS.md`, `docs/lessons.md`, `docs/development.md`, or contributor docs.
-
-If no convention exists:
-
-- For early-stage projects, create or update root `LESSONS.md`.
-- For larger projects, use `docs/lessons.md` or a focused file under existing docs.
-- Split into multiple lesson files only when a single file becomes hard to scan.
-
-Follow the project's existing documentation style when possible.
-
-## Lesson Format
-
-Use concise entries that explain what happened and how to avoid it.
-
-Recommended structure:
-
-```markdown
-## Short Lesson Title
-
-- Context: What task or area exposed the issue.
-- Symptom: What failed or was confusing.
-- Cause: The underlying reason.
-- Resolution: What fixed it.
-- Prevention: What future contributors should do first.
-```
-
-If the lesson is small, combine fields into a short paragraph and keep the prevention step explicit.
+First search existing contributor docs, `LESSONS.md`, `docs/lessons.md`, development guides,
+and nearby troubleshooting material. Update the established location. If none exists and
+the lesson justifies a new file, prefer root `LESSONS.md` for a small project or the
+existing docs hierarchy for a larger one.
 
 ## Workflow
 
-When friction occurs:
+1. Investigate until the cause and successful resolution are supported by evidence.
+2. Check for an existing lesson and update it instead of duplicating it.
+3. Add the smallest useful entry with context, symptom, cause, resolution, and prevention.
+4. Include exact commands, versions, paths, or links only when they materially reduce
+   ambiguity and do not expose secrets or machine-specific data.
+5. Verify the prevention step from a clean or representative state when practical.
+6. Link to the durable source of truth rather than copying large instructions.
 
-1. Finish enough investigation to know the actual cause.
-2. Check whether the lesson is already documented.
-3. Add or update the smallest useful entry.
-4. Link to relevant files, commands, or docs when that reduces ambiguity.
-5. Keep the lesson factual; avoid blame or diary-style narration.
+Suggested form:
 
-Before finalizing work, mention any lesson document updates in the final response.
+```markdown
+## Short lesson title
+
+- Context:
+- Symptom:
+- Cause:
+- Resolution:
+- Prevention:
+```
+
+Collapse small lessons into a paragraph when the fields would add noise.
+
+## Stop conditions
+
+Do not publish the lesson when the cause remains speculative, the content contains secrets
+or personal paths, the guidance is temporary without a clear expiry/version, or an existing
+canonical document should be fixed instead.
+
+## Expected output
+
+Report the lesson location, verified cause and prevention, evidence used, and any remaining
+uncertainty.

@@ -1,5 +1,11 @@
 # Rust functional-first guidance
 
+## Contents
+
+- Recommended tooling
+- Rules: bindings, domain types, absence, failure, composition, I/O, and borrowing
+- Commands
+
 ## Recommended tooling
 
 Use:

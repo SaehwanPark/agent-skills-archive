@@ -1,79 +1,45 @@
 ---
 name: end-user-xp-improver
-description: Improve product and interface decisions by identifying target end users, use cases, pain points, and friction-reducing defaults before adding or changing features.
+description: Use when planning, implementing, or reviewing a user-facing UI, CLI, API, onboarding, error, or documentation change that needs explicit audience, workflow, low-friction defaults, accessibility, and recovery-path decisions.
 ---
 
-# end-user-xp-improver
+# End-User Experience Improver
 
-## Purpose
+Optimize the common user journey without inventing unsupported product requirements.
 
-Use this skill when designing, implementing, reviewing, or documenting features that affect how real users understand, operate, or benefit from a project.
+## Workflow
 
-Primary goals:
+1. Read product documentation, existing interfaces, examples, tests, and support signals to
+   identify the target users and their job to be done.
+2. Map the current path from entry to success, including setup, decisions, waiting, errors,
+   recovery, and repeated use.
+3. Identify concrete friction supported by evidence or label it as an assumption.
+4. Choose defaults that serve the common case while keeping advanced controls discoverable.
+5. Preserve established workflows and compatibility unless change is intentional.
+6. Verify the revised path with representative success, invalid input, empty state,
+   permission failure, retry/recovery, and accessibility scenarios where applicable.
 
-- Make the intended users and usage contexts explicit.
-- Optimize workflows around likely user pain points.
-- Prefer frictionless defaults and clear recovery paths.
-- Keep product-facing documentation understandable to future contributors and users.
+## Design rules
 
-## Discover the User Context
+- Minimize setup and required decisions before first value.
+- Use familiar project conventions and stable, predictable behavior.
+- Make errors specific, actionable, and safe; preserve user input when recovery permits.
+- Show progress, success, empty, loading, disabled, and failure states when relevant.
+- Keep advanced configuration optional and progressively disclosed.
+- Use clear labels, keyboard/focus behavior, contrast, and assistive semantics for UI work.
+- Do not require users to understand implementation details.
 
-Before changing user-facing behavior:
+Document target users or assumptions in an existing appropriate location only when the
+task authorizes documentation changes or the implementation already requires that doc to
+change. Do not create a new documentation system.
 
-1. Read the README and relevant docs for stated audience, use cases, and operating context.
-2. Inspect existing UI, CLI, API, examples, or tests to infer how users currently interact with the project.
-3. Identify the likely end-user groups if they are not explicitly documented.
-4. Note the main job-to-be-done, where the project is used, and what success looks like for those users.
+## Stop conditions
 
-If the audience or use cases are missing or ambiguous, update the appropriate project documentation with a concise statement of:
+Stop when audience or product intent has multiple high-impact interpretations, a proposed
+default changes security/privacy/data behavior, accessibility cannot be evaluated with
+available context, or reducing friction would break an established contract.
 
-- Who the project is for.
-- When or where they use it.
-- What problem it helps them solve.
+## Expected output
 
-## Design for Low Friction
-
-When adding or changing a feature, make the best practical guess about user pain points and reduce them.
-
-Prefer:
-
-- Clear defaults that work for common cases.
-- Minimal required setup before first value.
-- Helpful validation errors with next-step guidance.
-- Interfaces that match existing project conventions.
-- Progressive disclosure for advanced options.
-- Stable, predictable behavior over surprising automation.
-- Accessible labels, states, and feedback for UI changes.
-
-Avoid:
-
-- Requiring users to understand internals before using the feature.
-- Adding configuration without a clear reason.
-- Silent failures or vague error messages.
-- Workflow dead ends.
-- Documentation that only describes implementation details.
-
-## Documentation Expectations
-
-When user groups or use cases were inferred, document them as assumptions unless the project already establishes them.
-
-Good places to update:
-
-- README overview or usage section.
-- Product or feature docs.
-- CLI help text or examples.
-- API docs for user-facing contracts.
-- Onboarding or getting-started docs.
-
-Do not create new documentation files when an existing doc is the obvious home.
-
-## Review Checklist
-
-Before finalizing a user-facing change:
-
-- Can the target user understand what to do next?
-- Does the common path require the fewest reasonable decisions?
-- Are errors actionable?
-- Are advanced controls optional or clearly separated?
-- Is the audience or use case documented if it was previously unclear?
-- Did the change preserve existing workflows unless intentionally changed?
+Report the target user and task, friction addressed, defaults and recovery paths chosen,
+scenarios verified, assumptions, and deliberately deferred experience improvements.
