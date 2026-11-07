@@ -206,7 +206,7 @@ P0 is an *editorial/integrity* priority (not evidence of authorship); P1 is disc
 
 - **Description:** Heavy, repetitive reliance on em dashes (—) across multiple sentences as parenthetical commentary, theatrical pauses, or clause-stitching crutches; mechanical colon/semicolon stacking.
 - **Evidence:** research_informed_hypothesis / unvalidated_hypothesis; research status does not establish authorship.
-- **Check before changing:** A single paired em-dash parenthetical within a sentence is standard grammatical punctuation. Evaluate whether em dashes are clustered across multiple sentences or serve as repetitive rhetorical interruptions.
+- **Check before changing:** A single paired em-dash parenthetical within a sentence is standard grammatical punctuation. Evaluate whether em dashes are clustered across multiple sentences or serve as repetitive rhetorical interruptions. Two well-formed parentheticals in separate sentences are a review candidate, not sufficient evidence for an edit.
 - **Proposed intervention:** Distinguish legitimate paired punctuation from repetitive interruptions. When em dashes cluster across sentences, replace with standard syntactic subordination, natural commas, parentheses for technical qualifiers, or clean sentence splits.
 - **Evidence references:** S02
 

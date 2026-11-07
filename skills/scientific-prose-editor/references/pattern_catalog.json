@@ -363,7 +363,7 @@
       "ai_association": "unvalidated_hypothesis",
       "unit": "paragraph",
       "description": "Heavy and repetitive reliance on em dashes (—) across multiple sentences as parenthetical commentary, theatrical pauses, or clause-stitching crutches; mechanical colon/semicolon stacking.",
-      "false_positive_guard": "A single paired em-dash parenthetical within a sentence is standard punctuation; evaluate whether dashes cluster repeatedly across multiple sentences or serve as repetitive rhetorical interruptions.",
+      "false_positive_guard": "A single paired em-dash parenthetical within a sentence is standard punctuation, and two well-formed parentheticals in separate sentences do not by themselves establish a habit. Detection flags them for review, but recommend an edit only when dashes recur across the passage or demonstrably interrupt reading.",
       "editing_guidance": "Distinguish legitimate paired parentheticals from repetitive interruptions; replace overused em dashes across sentences with standard syntactic subordination, natural commas, parentheses, or clean sentence splits.",
       "source_ids": [
         "S02"

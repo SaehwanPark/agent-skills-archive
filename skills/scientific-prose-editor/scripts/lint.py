@@ -39,7 +39,7 @@ PATTERNS = {
   "L06": ("Decorative general recap", "P2", "Consider ending with the concrete finding rather than generalized importance.",
           "A conclusion is appropriate when it answers the specific question."),
   "L07": ("Punctuation habit or em-dash clustering", "P2", "Repetitive em dashes across sentences may disrupt reading cadence.",
-          "A single paired em-dash parenthetical is standard punctuation; evaluate whether dashes cluster repeatedly across multiple sentences."),
+          "Paired em-dash parentheticals are standard punctuation, even in two separate sentences; recommend an edit only with stronger evidence of a repeated habit or impaired reading."),
   "L08": ("Predictable list-like flow or repetitive conclusion", "P2", "Formulaic sequential enumeration or repetitive concluding recap reduces natural flow.",
           "Explicit study design, methodological sequencing, hypothesis enumeration, and reporting conventions override stylistic diversity objectives."),
   "R04": ("Potential design–claim mismatch", "P0", "A causal-sounding claim appears alongside observational-design cues.",
@@ -56,6 +56,11 @@ RULES = [
   ("L02", re.compile(r"\b(?:revolutionary|first[- ]ever|paradigm[- ]shifting|unparalleled)\b", re.I), None),
   ("L06", re.compile(r"\b(?:these findings underscore the importance of|this work highlights the critical need for)\b", re.I), None),
 ]
+
+STRUCTURAL_LABEL = re.compile(
+  r"(?i)^[\s*_\-•]*(?:\d+[.)]\s*)?"
+  r"(?:specific\s+aim|sub-?aim|aim|objective|hypothesis|step|phase|endpoint)\s*(?:\d+[a-z]?|[IVX]+)\b"
+)
 
 
 def analyze(text: str, genre: str = "manuscript", section: str = "auto") -> dict:
@@ -93,10 +98,9 @@ def analyze(text: str, genre: str = "manuscript", section: str = "auto") -> dict
       if min(len(tok1), len(tok2)) >= 6 and len(tok1 & tok2) >= 6 and jaccard(tok1, tok2) >= 0.68:
         add("D01", a2, b2, text[a2:b2])
     block_section = section_at(sections, start)
-    has_aims_or_steps = bool(re.search(
-      r"(?i)\b(?:aim\s*\d+|specific\s*aim|objective\s*\d+|hypothesis\s*\d+|step\s*\d+|phase\s*[I|V|X\d]+|endpoint\s*\d+)\b",
-      block
-    ))
+    # Exempt only blocks where labels lead sentences (aims, protocol steps), not incidental mentions.
+    structural_labels = [s for _a, _b, s in sentences if STRUCTURAL_LABEL.match(s)]
+    has_aims_or_steps = len(structural_labels) >= 2
     # Count at sentence starts instead of using variable-width lookbehind.
     beginnings = [(a, s) for a, _b, s in sentences if re.match(r"(?i)^(?:moreover|furthermore|additionally|in addition|notably|importantly)\s*[,;]", s.strip())]
     if len(beginnings) >= 3 and len(sentences) >= 3:

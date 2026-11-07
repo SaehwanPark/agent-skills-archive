@@ -30,7 +30,7 @@ class ScientificProseEditorBehavioralTests(unittest.TestCase):
     self.assertEqual(l07_issues, [], "A single paired em-dash parenthetical should not trigger L07")
 
   def test_l07_clustered_em_dashes_across_sentences_flagged(self) -> None:
-    """Em dashes appearing across multiple distinct sentences indicate a repetitive habit."""
+    """Two paired parentheticals are a review candidate, not grounds to recommend an edit."""
     text = (
       "The primary endpoint—the outcome specified before enrollment—was assessed at 30 days. "
       "The secondary endpoint—overall survival at one year—was also evaluated across all study participants."
@@ -38,6 +38,7 @@ class ScientificProseEditorBehavioralTests(unittest.TestCase):
     res = analyze(text)
     l07_issues = [i for i in res["issues"] if i["pattern_id"] == "L07"]
     self.assertEqual(len(l07_issues), 1)
+    self.assertIn("stronger evidence", l07_issues[0]["false_positive_guard"])
 
   def test_l07_multiple_interruptions_single_sentence_flagged(self) -> None:
     """Three or more em dashes in a single sentence indicate stacked rhetorical pauses."""
@@ -84,6 +85,31 @@ class ScientificProseEditorBehavioralTests(unittest.TestCase):
     res = analyze(text, genre="manuscript", section="discussion")
     l08_issues = [i for i in res["issues"] if i["pattern_id"] == "L08"]
     self.assertEqual(len(l08_issues), 1)
+
+  def test_incidental_phase_mention_does_not_exempt_paragraph(self) -> None:
+    """A passing mention of a phase does not exempt mechanical enumeration elsewhere."""
+    text = (
+      "## Discussion\n\n"
+      "This phase 2 study informed how later trials in the same population were interpreted. "
+      "First, the efficacy signal was modest across prespecified outcomes. "
+      "Second, the safety profile remained acceptable in the enrolled cohort. "
+      "Finally, the pharmacokinetic data were incomplete for dose selection."
+    )
+    res = analyze(text, genre="manuscript", section="discussion")
+    l08_issues = [i for i in res["issues"] if i["pattern_id"] == "L08"]
+    self.assertEqual(len(l08_issues), 1)
+
+  def test_sentence_leading_aims_exempt_outside_aims_section(self) -> None:
+    """Labels that open sentences function as enumerated aims and stay exempt."""
+    text = (
+      "Aim 1 will establish feasibility and assess protocol adherence across every participating clinical study cohort site. "
+      "Aim 2 will establish feasibility and assess protocol adherence across every participating clinical study cohort site. "
+      "Aim 3 will establish feasibility and assess protocol adherence across every participating clinical study cohort site. "
+      "Aim 4 will establish feasibility and assess protocol adherence across every participating clinical study cohort site."
+    )
+    res = analyze(text, genre="grant", section="discussion")
+    flagged = [i["pattern_id"] for i in res["issues"] if i["pattern_id"] in ("L04", "L08")]
+    self.assertEqual(flagged, [])
 
   def test_l04_burstiness_narrative_uniformity_flagged_as_advisory(self) -> None:
     """Consecutive sentences of identical length in narrative prose are flagged for cadence review."""
@@ -139,26 +165,35 @@ class ScientificProseEditorBehavioralTests(unittest.TestCase):
     self.assertEqual(result["status"], "screen_passed")
     self.assertEqual(result["findings"], [])
 
-  def test_corrected_examples_pass_token_screen(self) -> None:
-    """Corrected examples preserve meaning and also pass token screening."""
+  def test_token_screen_does_not_establish_semantic_preservation(self) -> None:
+    """screen_passed is a token check only and does not establish semantic preservation.
+
+    The lossy genomic merge drops variant identification and treats filtering
+    low-confidence calls as filtering candidate variants. The optional rewrite
+    keeps each actor and step. Both pass the token screen, so a passing screen
+    cannot tell them apart and is not evidence that meaning was preserved.
+    """
     orig_a = (
       "The algorithm processed all genomic sequences. The software identified variant candidates. "
       "The pipeline filtered out low confidence calls. The team verified the remaining variants."
     )
-    corrected_a = (
+    lossy_a = (
       "The pipeline filtered candidate variants after processing all genomic sequences, "
       "and the team verified the remaining variants."
     )
-    res_a = verify(orig_a, corrected_a)
-    self.assertEqual(res_a["status"], "screen_passed")
+    optional_a = (
+      "The algorithm processed all genomic sequences, and the software identified variant candidates. "
+      "The pipeline then removed low-confidence calls, and the team verified the remaining variants."
+    )
+    self.assertEqual(verify(orig_a, lossy_a)["status"], "screen_passed")
+    self.assertEqual(verify(orig_a, optional_a)["status"], "screen_passed")
 
     orig_b = (
       "First, we evaluated efficacy. Second, we assessed safety. Finally, we analyzed pharmacokinetics. "
       "In summary, these findings underscore the potential of the drug."
     )
-    corrected_b = "We evaluated efficacy, safety, and pharmacokinetics."
-    res_b = verify(orig_b, corrected_b)
-    self.assertEqual(res_b["status"], "screen_passed")
+    edited_b = "We evaluated efficacy, safety, and pharmacokinetics."
+    self.assertEqual(verify(orig_b, edited_b)["status"], "screen_passed")
 
   def test_pattern_catalog_metadata_and_consistency(self) -> None:
     """Pattern catalog must be incremented to 0.2.0 and document 26 patterns matching taxonomy."""

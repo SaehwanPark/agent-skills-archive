@@ -26,7 +26,7 @@ Explicitly evaluate and address four prominent stylistic anti-patterns common in
 3. **Punctuation habits (em dashes and mechanical tics)**: Repetitive use of em dashes (`—`) across sentences as parenthetical crutches or theatrical pauses, and repetitive colon/semicolon stacking. Distinguish legitimate single paired em-dash parentheticals from repetitive stylistic tics.
 4. **Burstiness (sentence structure and rhythm variation)**: Repetitive sentence architecture, unnecessary parallelism, and monotonous progression that create a flat cadence. Evaluate cadence descriptively rather than targeting artificial word counts or statistical distributions.
 
-**Precedence rule:** Explicit study design, methodological sequencing, hypothesis enumeration, and standardized reporting conventions override stylistic diversity objectives.
+**Precedence rule:** Explicit study design, methodological sequencing, hypothesis enumeration, and standardized reporting conventions override stylistic diversity objectives. An incidental mention of an aim, step, phase, or endpoint does not exempt the rest of a paragraph.
 
 Prioritize: (1) scientific integrity; (2) argumentative cohesion and specificity; (3) style. **Never call text AI-authored or human-authored based on style.** Heuristic pattern findings are not proof of AI involvement. Do not ban technical words, valid em dashes, first-person pronouns, passive voice, or purposeful parallel lists simply for appearing in AI text.
 
@@ -40,10 +40,11 @@ The linter emits *review candidates*, not commands or detector predictions. Disc
 
 ## 2. Edit and polish with precision
 
+- If a scientifically accurate passage cannot be made appreciably better without increasing semantic risk, retain the original. Returning prose unchanged is a valid outcome.
 - Ensure every retained sentence advances a claim, conveys evidence, makes a warranted interpretation, or supplies useful navigation.
 - **Word usage**: Replace hollow buzzwords, ornamental metaphors, and synthetic connectors with concrete, discipline-appropriate verbs and nouns.
 - **Predictability**: Break uniform paragraph blocks by matching length to conceptual depth; replace tidy formulaic list flows with cohesive narrative logic, except where explicit study design, methodological sequencing, hypothesis enumeration (e.g., Specific Aims), or reporting conventions require parallel structure; delete predictable summary conclusions at paragraph tails and let findings lead forward.
-- **Punctuation habits**: Restrict em dashes (`—`) to occasional, purposeful emphasis; distinguish legitimate paired parentheticals from repeated interruptions; replace mechanical em dashes with standard subordination, natural commas, parentheses, or clean sentence splits.
+- **Punctuation habits**: Restrict em dashes (`—`) to occasional, purposeful emphasis; distinguish legitimate paired parentheticals from repeated interruptions (a few well-formed parentheticals in separate sentences are not, by themselves, a problem; recommend an edit only when dashes demonstrably interrupt reading or recur as a habit across the passage); replace mechanical em dashes with standard subordination, natural commas, parentheses, or clean sentence splits.
 - **Burstiness**: Review extended passages for repetitive sentence architecture, unnecessary parallelism, and monotonous progression. Vary sentence structure when doing so improves clarity, emphasis, or argument flow. Let scientific content determine sentence length; do not target particular word counts or statistical distributions.
 - **Genre fidelity**: For manuscripts, respect section roles (Methods = what was done; Results = observations; Discussion = meaning and limitations). For grants/proposals, preserve aims, hypotheses, mechanisms, and preliminary data. For technical docs, prioritize definitions and reproducibility.
 - Consult [genre_profiles.md](references/genre_profiles.md) for section exceptions, [rewrite_examples.md](references/rewrite_examples.md) for conservative rewrites, and [editing_policy.md](references/editing_policy.md) for prohibited transformations.
@@ -66,8 +67,8 @@ python scripts/verify_revision.py draft.md edited.md --output fidelity_review.js
 ## 4. Output contract
 
 In edit mode return:
-1. **Revised prose**, copy-ready, with required scientific notation/citations preserved.
-2. **Material changes**: what changed and why it benefits scientific readers, highlighting fixes for word usage, predictability, punctuation habits, and burstiness.
+1. **Revised prose**, copy-ready, with required scientific notation/citations preserved. If no edit is warranted, say so and return the original.
+2. **Material changes**: what changed and why it benefits scientific readers, highlighting fixes for word usage, predictability, punctuation habits, and burstiness where applicable. Do not manufacture changes to cover every category.
 3. **Verification notes**: unresolved information, methodological risks, and compliance caveats.
 
 In audit mode return issues with exact excerpts, consequences for readers, and proposed minimal edits, with no automatic rewriting.
