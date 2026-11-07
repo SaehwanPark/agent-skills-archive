@@ -1,0 +1,122 @@
+{
+  "tool": "scientific-prose-editor/lint",
+  "version": "1.0.0",
+  "genre": "manuscript",
+  "section": "auto",
+  "interpretation": "Review candidates only. Not an AI detector or quality score.",
+  "issue_count": 7,
+  "issues": [
+    {
+      "pattern_id": "L01",
+      "label": "Cluster of conventional AI-associated terms",
+      "priority": "P2",
+      "start": 41,
+      "end": 1117,
+      "position": {
+        "line": 3,
+        "column": 26
+      },
+      "section": "introduction",
+      "excerpt": "pivotal, multifaceted, underscore, multifaceted",
+      "rationale": "Check whether repeated ornamental wording improves precision.",
+      "false_positive_guard": "These words are never authorship evidence and may be entirely appropriate.",
+      "decision": "manual_review_required"
+    },
+    {
+      "pattern_id": "D03",
+      "label": "Generic significance framing",
+      "priority": "P1",
+      "start": 92,
+      "end": 112,
+      "position": {
+        "line": 3,
+        "column": 77
+      },
+      "section": "introduction",
+      "excerpt": "plays a crucial role",
+      "rationale": "The claim may lack a study-specific reason for importance.",
+      "false_positive_guard": "General context can be appropriate in interdisciplinary introductions.",
+      "decision": "manual_review_required"
+    },
+    {
+      "pattern_id": "D09",
+      "label": "Non-substantive metacommentary",
+      "priority": "P2",
+      "start": 142,
+      "end": 170,
+      "position": {
+        "line": 3,
+        "column": 127
+      },
+      "section": "introduction",
+      "excerpt": "It is important to note that",
+      "rationale": "The clause announces rather than conveys scientific content.",
+      "false_positive_guard": "Long technical documents may require a clear section roadmap.",
+      "decision": "manual_review_required"
+    },
+    {
+      "pattern_id": "D10",
+      "label": "Unspecified critique of prior work",
+      "priority": "P1",
+      "start": 229,
+      "end": 260,
+      "position": {
+        "line": 3,
+        "column": 214
+      },
+      "section": "introduction",
+      "excerpt": "Previous studies have failed to",
+      "rationale": "The comparison may need specific evidence and citations.",
+      "false_positive_guard": "A nearby citation or established literature summary may support it.",
+      "decision": "manual_review_required"
+    },
+    {
+      "pattern_id": "D04",
+      "label": "Evaluative result instead of observation",
+      "priority": "P1",
+      "start": 745,
+      "end": 772,
+      "position": {
+        "line": 11,
+        "column": 1
+      },
+      "section": "results",
+      "excerpt": "Results were very promising",
+      "rationale": "The sentence may emphasize significance rather than reported findings.",
+      "false_positive_guard": "Qualitative research may report themes rather than numbers.",
+      "decision": "manual_review_required"
+    },
+    {
+      "pattern_id": "L06",
+      "label": "Decorative general recap",
+      "priority": "P2",
+      "start": 942,
+      "end": 985,
+      "position": {
+        "line": 15,
+        "column": 1
+      },
+      "section": "discussion",
+      "excerpt": "These findings underscore the importance of",
+      "rationale": "Consider ending with the concrete finding rather than generalized importance.",
+      "false_positive_guard": "A conclusion is appropriate when it answers the specific question.",
+      "decision": "manual_review_required"
+    },
+    {
+      "pattern_id": "D07",
+      "label": "Generic future-work sentence",
+      "priority": "P1",
+      "start": 1041,
+      "end": 1066,
+      "position": {
+        "line": 15,
+        "column": 100
+      },
+      "section": "discussion",
+      "excerpt": "Future research is needed",
+      "rationale": "The sentence does not identify the unresolved research question.",
+      "false_positive_guard": "Some journal conclusions require a concise future-work statement.",
+      "decision": "manual_review_required"
+    }
+  ]
+}

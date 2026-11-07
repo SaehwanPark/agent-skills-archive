@@ -31,6 +31,7 @@ reliably across projects.
 | `lesson-documenter` | Captures verified, recurring development and operations traps. | Preserves causes and prevention without accumulating debugging diaries. |
 | `wayback-link-fallback` | Recovers version-appropriate archived web evidence. | Handles dead or changed sources while preserving provenance and current-truth checks. |
 | `call-r-lib-in-python` | Integrates R packages and models into Python through `rpy2`. | Makes runtime discovery, dependencies, conversion, fitting, and extraction explicit. |
+| `scientific-prose-editor` | Audits and edits scientific manuscripts, grants, abstracts, and technical prose. | Removes mechanical and templated phrasing while preserving scientific claims, numbers, citations, and author voice. |
 
 ## What a skill looks like
 

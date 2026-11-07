@@ -1,0 +1,32 @@
+{
+  "tool": "scientific-prose-editor/verify_revision",
+  "version": "1.0.0",
+  "status": "needs_manual_review",
+  "findings": [
+    {
+      "check": "negation",
+      "level": "review",
+      "message": "Potential change in scope, negation, certainty, or causal implication.",
+      "removed": {},
+      "added": {
+        "not": 1
+      }
+    },
+    {
+      "check": "uncertainty_modal",
+      "level": "review",
+      "message": "Potential change in scope, negation, certainty, or causal implication.",
+      "removed": {
+        "could": 1
+      },
+      "added": {
+        "may": 1
+      }
+    }
+  ],
+  "limitations": [
+    "A clean screen is NOT proof of semantic fidelity; reading against original scientific sources is mandatory.",
+    "Formatting, numeric paraphrases, narrative fact edits, citation systems, negation scope and cross-section inconsistencies require human review.",
+    "Token-based comparison may flag harmless changes or miss harmful changes."
+  ]
+}

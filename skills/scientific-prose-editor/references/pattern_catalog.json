@@ -1,0 +1,560 @@
+{
+  "version": "0.1.0",
+  "date": "2026-11-07",
+  "status": "research-informed candidate taxonomy; not empirically validated as a scoring instrument",
+  "priority_definitions": {
+    "P0": "meaning, integrity or demonstrable discourse defect; review first",
+    "P1": "high-leverage section-level editorial issue",
+    "P2": "lower-priority stylistic hypothesis; never mechanically enforce"
+  },
+  "evidence_levels": {
+    "direct_empirical": "controlled human-judgment or direct human-vs-AI comparison in academic/medical writing",
+    "direct_corpus_observational": "large academic corpus association or drift, not individual-author attribution",
+    "cross_domain_empirical": "empirical comparison in other nonfiction genre; transfer uncertain",
+    "research_informed_hypothesis": "reasonable editorial concern but AI-specific linkage not established by supplied studies",
+    "policy_invariant": "critical preservation/compliance rule; intentionally not an AI-writing indicator"
+  },
+  "patterns": [
+    {
+      "id": "D01",
+      "family": "discourse",
+      "label": "Redundant restatement",
+      "evidence_level": "direct_empirical",
+      "editorial_priority": "P0",
+      "ai_association": "associated_in_study",
+      "unit": "paragraph",
+      "description": "Adjacent sentences repeat the same claim without new evidence, distinction, or implication.",
+      "false_positive_guard": "Repetition may aid orientation in abstracts or long technical documents; check communicative role.",
+      "editing_guidance": "Merge repeated claims; retain the most precise statement and necessary link.",
+      "source_ids": [
+        "S01",
+        "S02"
+      ],
+      "genres": "all",
+      "severity_when_confirmed": "moderate"
+    },
+    {
+      "id": "D02",
+      "family": "discourse",
+      "label": "Broken logical thread",
+      "evidence_level": "direct_empirical",
+      "editorial_priority": "P0",
+      "ai_association": "associated_in_study",
+      "unit": "paragraph",
+      "description": "Claim-to-evidence progression jumps, or key qualifiers disappear between sentences.",
+      "false_positive_guard": "Dense mathematical prose may use separately defined terminology; consult equations and cross-references.",
+      "editing_guidance": "Identify premises and evidence; request missing support rather than invent bridges.",
+      "source_ids": [
+        "S01",
+        "S02"
+      ],
+      "genres": "all",
+      "severity_when_confirmed": "major"
+    },
+    {
+      "id": "R01",
+      "family": "scientific_integrity",
+      "label": "Unsupported claims and references",
+      "evidence_level": "direct_empirical",
+      "editorial_priority": "P0",
+      "ai_association": "scientific_risk_not_specific_authorship_cue",
+      "unit": "claim",
+      "description": "Background or discussion asserts findings without a verifiable source or with fabricated bibliographic details.",
+      "false_positive_guard": "General domain definitions may not require citation; journal conventions differ.",
+      "editing_guidance": "Verify every substantive referenced claim; mark unverifiable references for author review.",
+      "source_ids": [
+        "S09",
+        "S11"
+      ],
+      "genres": "all",
+      "severity_when_confirmed": "critical"
+    },
+    {
+      "id": "R02",
+      "family": "scientific_integrity",
+      "label": "Overstatement of evidence or clinical utility",
+      "evidence_level": "research_informed_hypothesis",
+      "editorial_priority": "P0",
+      "ai_association": "not_established",
+      "unit": "claim",
+      "description": "Wording asserts definitive effects, causal implications, or clinical benefit beyond underlying analysis.",
+      "false_positive_guard": "Strong claims are appropriate when design and evidence justify them.",
+      "editing_guidance": "Constrain claim to supplied estimand, population, study design, and measurements.",
+      "source_ids": [
+        "S11",
+        "S12",
+        "S13"
+      ],
+      "genres": "manuscript,proposal,grant",
+      "severity_when_confirmed": "critical"
+    },
+    {
+      "id": "R03",
+      "family": "scientific_integrity",
+      "label": "Changed quantitative or methodological facts",
+      "evidence_level": "policy_invariant",
+      "editorial_priority": "P0",
+      "ai_association": "not_an_ai_cue",
+      "unit": "span",
+      "description": "Editing changes n, effect size, confidence interval, p-value, comparator, endpoint, method, eligibility, or code identifier.",
+      "false_positive_guard": "Formatting normalization is acceptable only if numeric meaning and notation remain equivalent.",
+      "editing_guidance": "Block output until source text, tables, and methods match; raise discrepancy.",
+      "source_ids": [
+        "S11",
+        "S12",
+        "S13"
+      ],
+      "genres": "all",
+      "severity_when_confirmed": "critical"
+    },
+    {
+      "id": "D03",
+      "family": "discourse",
+      "label": "Generic significance without study-specific stakes",
+      "evidence_level": "research_informed_hypothesis",
+      "editorial_priority": "P1",
+      "ai_association": "unvalidated_hypothesis",
+      "unit": "paragraph",
+      "description": "Introduction or grant significance states broad importance without concrete population, gap, or decision relevance.",
+      "false_positive_guard": "A general opening can be justified for interdisciplinary audiences.",
+      "editing_guidance": "Anchor to supplied burden, gap, mechanism, or research question; do not invent numbers.",
+      "source_ids": [
+        "S02"
+      ],
+      "genres": "introduction,grant,proposal",
+      "severity_when_confirmed": "moderate"
+    },
+    {
+      "id": "D04",
+      "family": "discourse",
+      "label": "Results replaced by evaluative commentary",
+      "evidence_level": "research_informed_hypothesis",
+      "editorial_priority": "P1",
+      "ai_association": "unvalidated_hypothesis",
+      "unit": "paragraph",
+      "description": "Abstract or Results paragraphs say findings are promising/important without the measurable result.",
+      "false_positive_guard": "Some qualitative research appropriately reports themes rather than effect sizes.",
+      "editing_guidance": "Lead with measured results already present in source material; reserve interpretation for Discussion.",
+      "source_ids": [
+        "S06",
+        "S07",
+        "S12",
+        "S13"
+      ],
+      "genres": "abstract,results",
+      "severity_when_confirmed": "major"
+    },
+    {
+      "id": "D05",
+      "family": "discourse",
+      "label": "Inappropriate rhetorical-move balance",
+      "evidence_level": "direct_empirical",
+      "editorial_priority": "P1",
+      "ai_association": "associated_in_abstract_corpora",
+      "unit": "section",
+      "description": "Abstract overweights interpretation, omits context/method or organizes discourse moves unnaturally for target journal.",
+      "false_positive_guard": "Structured abstract rules and journal formats override any learned frequencies.",
+      "editing_guidance": "Check section function against journal and reporting guidelines; preserve required headings.",
+      "source_ids": [
+        "S06",
+        "S15"
+      ],
+      "genres": "abstract",
+      "severity_when_confirmed": "moderate"
+    },
+    {
+      "id": "D06",
+      "family": "discourse",
+      "label": "Affective/promotional stance imbalance",
+      "evidence_level": "direct_empirical",
+      "editorial_priority": "P1",
+      "ai_association": "associated_in_abstract_corpora",
+      "unit": "sentence",
+      "description": "Positive evaluative language dominates evidence reporting; hedges/boosters lack an evidentiary basis.",
+      "false_positive_guard": "Strong recommendations can be justified; standards differ between grants and manuscripts.",
+      "editing_guidance": "Replace emotive judgments with evidence-tied interpretation and justified uncertainty.",
+      "source_ids": [
+        "S07",
+        "S06"
+      ],
+      "genres": "abstract,discussion,grant",
+      "severity_when_confirmed": "moderate"
+    },
+    {
+      "id": "D07",
+      "family": "discourse",
+      "label": "Generic future work or implications",
+      "evidence_level": "research_informed_hypothesis",
+      "editorial_priority": "P1",
+      "ai_association": "unvalidated_hypothesis",
+      "unit": "paragraph",
+      "description": "Conclusion prescribes more research or broad adoption without explaining which uncertainty remains.",
+      "false_positive_guard": "A concise future-work statement may be required by a journal or grant.",
+      "editing_guidance": "Specify the actual limitation, unanswered question, and relevant next step only if supplied.",
+      "source_ids": [
+        "S02"
+      ],
+      "genres": "discussion,proposal,grant",
+      "severity_when_confirmed": "moderate"
+    },
+    {
+      "id": "D08",
+      "family": "discourse",
+      "label": "Overly symmetric rhetorical framing",
+      "evidence_level": "research_informed_hypothesis",
+      "editorial_priority": "P2",
+      "ai_association": "unvalidated_hypothesis",
+      "unit": "paragraph",
+      "description": "Repeated balancing constructions force two-sided treatment where evidence is asymmetric.",
+      "false_positive_guard": "Balanced discussion is essential when true uncertainty or conflicting evidence exists.",
+      "editing_guidance": "Represent evidentiary balance faithfully, not rhetorically.",
+      "source_ids": [
+        "S02"
+      ],
+      "genres": "introduction,discussion,grant",
+      "severity_when_confirmed": "minor"
+    },
+    {
+      "id": "D09",
+      "family": "discourse",
+      "label": "Unnecessary metacommentary",
+      "evidence_level": "research_informed_hypothesis",
+      "editorial_priority": "P2",
+      "ai_association": "unvalidated_hypothesis",
+      "unit": "sentence",
+      "description": "Sentences announce what the manuscript will discuss instead of advancing its argument.",
+      "false_positive_guard": "Roadmaps are useful in long technical documents; aims and objectives often require explicit signposting.",
+      "editing_guidance": "Retain navigation when functional; otherwise replace with the substantive claim.",
+      "source_ids": [
+        "S06"
+      ],
+      "genres": "introduction,technical",
+      "severity_when_confirmed": "minor"
+    },
+    {
+      "id": "D10",
+      "family": "discourse",
+      "label": "Overgeneralized comparison with prior work",
+      "evidence_level": "research_informed_hypothesis",
+      "editorial_priority": "P1",
+      "ai_association": "unvalidated_hypothesis",
+      "unit": "paragraph",
+      "description": "Prior studies are summarized as uniformly inadequate without concrete contrast in population, design, outcome, or methods.",
+      "false_positive_guard": "A synthesis of heterogeneous studies may require broad framing supported by citations.",
+      "editing_guidance": "Specify verified comparative dimensions and soften claims unsupported by supplied sources.",
+      "source_ids": [
+        "S09",
+        "S11"
+      ],
+      "genres": "introduction,discussion,grant",
+      "severity_when_confirmed": "major"
+    },
+    {
+      "id": "L01",
+      "family": "surface",
+      "label": "LLM-associated lexical clustering and buzzwords",
+      "evidence_level": "direct_corpus_observational",
+      "editorial_priority": "P2",
+      "ai_association": "aggregate_corpus_marker_only",
+      "unit": "document",
+      "description": "Disproportionate repeated clusters of words reported as LLM-associated or synthetic buzzwords humans rarely choose in scientific prose, such as delve/underscore/pivotal/intricate/testament/beacon/elevate/foster/paramount/tapestry.",
+      "false_positive_guard": "Single words are common legitimate English; prevalence varies by year, discipline, and authorship. Never ban or classify from lexical hits.",
+      "editing_guidance": "Check whether terms contribute precision; remove ornamental repetition and replace hollow buzzwords with plain, precise scientific language.",
+      "source_ids": [
+        "S04",
+        "S05",
+        "S14"
+      ],
+      "genres": "all",
+      "severity_when_confirmed": "minor"
+    },
+    {
+      "id": "L02",
+      "family": "surface",
+      "label": "Stock emphasis and intensifiers",
+      "evidence_level": "research_informed_hypothesis",
+      "editorial_priority": "P2",
+      "ai_association": "unvalidated_hypothesis",
+      "unit": "sentence",
+      "description": "Terms such as groundbreaking or transformative appear without evidentiary basis.",
+      "false_positive_guard": "Innovation sections in grants necessarily argue significance; evaluative terms may be supported.",
+      "editing_guidance": "Convert to specific evidence-supported scope or outcome.",
+      "source_ids": [
+        "S07"
+      ],
+      "genres": "introduction,discussion,grant",
+      "severity_when_confirmed": "moderate"
+    },
+    {
+      "id": "L03",
+      "family": "surface",
+      "label": "Mechanical transition stacking",
+      "evidence_level": "research_informed_hypothesis",
+      "editorial_priority": "P2",
+      "ai_association": "unvalidated_hypothesis",
+      "unit": "paragraph",
+      "description": "Successive sentences rely on formulaic transitions despite obvious logical relation.",
+      "false_positive_guard": "Transitions can genuinely help complex multi-step reasoning, accessibility, and technical prose.",
+      "editing_guidance": "Keep transitions where they encode actual causation/contrast; remove redundant ones.",
+      "source_ids": [
+        "S02"
+      ],
+      "genres": "all",
+      "severity_when_confirmed": "minor"
+    },
+    {
+      "id": "L04",
+      "family": "surface",
+      "label": "Uniform sentence construction and low burstiness",
+      "evidence_level": "cross_domain_empirical",
+      "editorial_priority": "P2",
+      "ai_association": "conditional",
+      "unit": "paragraph",
+      "description": "Closely repeated syntactic frames, steady metronomic sentence lengths, or uniform clause openings reduce rhythm variation and create a flat, low-burstiness cadence.",
+      "false_positive_guard": "Parallelism is essential in aims, hypotheses, and methods; uniformity alone is not a problem.",
+      "editing_guidance": "Vary construction and inject burstiness by alternating concise, punchy assertions with compound, evidence-rich explanatory sentences, and varying opening structures.",
+      "source_ids": [
+        "S02"
+      ],
+      "genres": "introduction,discussion,proposal",
+      "severity_when_confirmed": "minor"
+    },
+    {
+      "id": "L05",
+      "family": "surface",
+      "label": "Unnecessarily abstract nominalizations",
+      "evidence_level": "research_informed_hypothesis",
+      "editorial_priority": "P2",
+      "ai_association": "unvalidated_hypothesis",
+      "unit": "sentence",
+      "description": "Abstract nouns obscure who performed an action or what was measured.",
+      "false_positive_guard": "Established statistical and biomedical terms should not be replaced with casual synonyms.",
+      "editing_guidance": "Use direct technical verbs when precise, while retaining necessary formal terminology.",
+      "source_ids": [
+        "S02"
+      ],
+      "genres": "all",
+      "severity_when_confirmed": "minor"
+    },
+    {
+      "id": "L06",
+      "family": "surface",
+      "label": "Decorative concluding recap",
+      "evidence_level": "research_informed_hypothesis",
+      "editorial_priority": "P2",
+      "ai_association": "unvalidated_hypothesis",
+      "unit": "paragraph",
+      "description": "Paragraph ends with a polished but non-informative restatement of broad significance.",
+      "false_positive_guard": "A conclusion is legitimately required in most abstracts and papers.",
+      "editing_guidance": "Make the concluding sentence answer the specific study question.",
+      "source_ids": [
+        "S02"
+      ],
+      "genres": "abstract,discussion",
+      "severity_when_confirmed": "minor"
+    },
+    {
+      "id": "L07",
+      "family": "surface",
+      "label": "Mechanical punctuation habits and em-dash overuse",
+      "evidence_level": "research_informed_hypothesis",
+      "editorial_priority": "P2",
+      "ai_association": "unvalidated_hypothesis",
+      "unit": "paragraph",
+      "description": "Heavy and repetitive use of em dashes (—) or mechanical punctuation crutches breaking prose cadence and serving as a parenthetical crutch.",
+      "false_positive_guard": "Em dashes are valid punctuation; check if cadence is disrupted or if em dashes are clustered repetitively.",
+      "editing_guidance": "Replace overused em dashes with standard syntactic subordination, natural commas, parentheses, or clean sentence splits.",
+      "source_ids": [
+        "S02"
+      ],
+      "genres": "all",
+      "severity_when_confirmed": "minor"
+    },
+    {
+      "id": "L08",
+      "family": "discourse",
+      "label": "Predictable paragraph architecture and list-like flows",
+      "evidence_level": "research_informed_hypothesis",
+      "editorial_priority": "P2",
+      "ai_association": "unvalidated_hypothesis",
+      "unit": "section",
+      "description": "Uniform paragraph lengths across sections, tidy list-like flows, and formulaic summary conclusions at the close of every paragraph.",
+      "false_positive_guard": "Methodological steps and specific aims naturally follow enumerated or parallel structures.",
+      "editing_guidance": "Vary paragraph progression organically; replace tidy formulaic lists with substantive transitions; cut predictable repetitive concluding sentences.",
+      "source_ids": [
+        "S02",
+        "S06"
+      ],
+      "genres": "all",
+      "severity_when_confirmed": "minor"
+    },
+    {
+      "id": "R04",
+      "family": "scientific_integrity",
+      "label": "Causality versus association conflation",
+      "evidence_level": "policy_invariant",
+      "editorial_priority": "P0",
+      "ai_association": "not_an_ai_cue",
+      "unit": "claim",
+      "description": "Observational associations are rewritten as interventions causing changes or as demonstrated mechanisms.",
+      "false_positive_guard": "Causal inference designs can support causal language if assumptions and estimand warrant it.",
+      "editing_guidance": "Keep causal scope aligned with research design and source claims.",
+      "source_ids": [
+        "S12"
+      ],
+      "genres": "manuscript,proposal,grant",
+      "severity_when_confirmed": "critical"
+    },
+    {
+      "id": "R05",
+      "family": "scientific_integrity",
+      "label": "Fabricated specificity",
+      "evidence_level": "policy_invariant",
+      "editorial_priority": "P0",
+      "ai_association": "not_an_ai_cue",
+      "unit": "claim",
+      "description": "Editor fills in absent sample size, measurement details, computational implementation, references, or preliminary data.",
+      "false_positive_guard": "None: unsupported facts must never be supplied as though known.",
+      "editing_guidance": "Flag missing information explicitly; do not supply plausible values.",
+      "source_ids": [
+        "S09",
+        "S11"
+      ],
+      "genres": "all",
+      "severity_when_confirmed": "critical"
+    },
+    {
+      "id": "R06",
+      "family": "scientific_integrity",
+      "label": "Inconsistent cross-section claims",
+      "evidence_level": "research_informed_hypothesis",
+      "editorial_priority": "P0",
+      "ai_association": "scientific_risk_not_specific_authorship_cue",
+      "unit": "document",
+      "description": "Abstract, Results, and Discussion describe different populations, endpoints, or effect directions.",
+      "false_positive_guard": "Changes may reflect clearly labeled prespecified sensitivity analyses; compare like with like.",
+      "editing_guidance": "Check against source-of-truth result tables and primary analysis specification.",
+      "source_ids": [
+        "S11",
+        "S12",
+        "S13"
+      ],
+      "genres": "manuscript,proposal",
+      "severity_when_confirmed": "major"
+    },
+    {
+      "id": "R07",
+      "family": "scientific_integrity",
+      "label": "Altered authorial scientific judgment",
+      "evidence_level": "policy_invariant",
+      "editorial_priority": "P0",
+      "ai_association": "not_an_ai_cue",
+      "unit": "paragraph",
+      "description": "Editing invents research gaps, hypotheses, mechanism claims, aims, or strategic priorities that were not authorized by the author.",
+      "false_positive_guard": "Explicit author-approved revisions to substantive plans are permissible outside polishing mode.",
+      "editing_guidance": "Preserve the author’s scientific decisions and mark suggestions as questions rather than inserting them.",
+      "source_ids": [
+        "S10",
+        "S11"
+      ],
+      "genres": "grant,proposal,manuscript",
+      "severity_when_confirmed": "critical"
+    },
+    {
+      "id": "D11",
+      "family": "discourse",
+      "label": "Ill-fitting authorial presence",
+      "evidence_level": "direct_empirical",
+      "editorial_priority": "P2",
+      "ai_association": "associated_in_abstract_corpora",
+      "unit": "section",
+      "description": "Self-mentions, framing statements, or attitude markers do not fit genre and local reporting style.",
+      "false_positive_guard": "First person is often recommended and not an AI cue; discipline-specific conventions vary.",
+      "editing_guidance": "Adapt only to target journal/discipline; never systematically ban “we”.",
+      "source_ids": [
+        "S06",
+        "S07",
+        "S15"
+      ],
+      "genres": "abstract,technical",
+      "severity_when_confirmed": "minor"
+    }
+  ],
+  "sources": {
+    "S01": {
+      "title": "Doru et al. (2025), Medical student essays and expert AI judgments",
+      "url": "https://mededu.jmir.org/2025/1/e62779",
+      "notes": "Human review; German medical student essays; 69 judgment rounds; redundancy/repetition/coherence associated with identification. Small, domain/language-specific."
+    },
+    "S02": {
+      "title": "Russell, Karpinska & Iyyer (ACL 2025), Human identification of AI-written nonfiction",
+      "url": "https://aclanthology.org/2025.acl-long.267/",
+      "notes": "Human review; 300 English nonfiction articles; frequent LLM users rely on lexical cues and higher-level formality, originality, clarity. Not specifically scientific writing."
+    },
+    "S03": {
+      "title": "Khera et al. (2025), Scientific writing in the era of LLMs",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/40814778/",
+      "notes": "Expert review; 34 cerebrovascular essays; Stroke editors misclassified 7/22 human-authored essays in majority-based assessment. Small sample."
+    },
+    "S04": {
+      "title": "Kobak et al. (Science Advances 2025), Excess vocabulary in biomedical abstracts",
+      "url": "https://doi.org/10.1126/sciadv.adt3813",
+      "notes": "Corpus trend; >15 million biomedical abstracts 2010-2024; aggregate excess vocabulary is not proof of authorship."
+    },
+    "S05": {
+      "title": "Kousha & Thelwall (Scientometrics 2026), LLM-associated words in full scientific articles",
+      "url": "https://doi.org/10.1007/s11192-026-05601-5",
+      "notes": "Corpus trend; six scholarly databases and >2.4m PMC full texts; co-occurrence and field variation; cannot distinguish AI-generated vs AI-edited text."
+    },
+    "S06": {
+      "title": "Deng, Li & Gao (JEAP 2026), Rhetorical moves and metadiscourse in abstracts",
+      "url": "https://doi.org/10.1016/j.jeap.2026.101731",
+      "notes": "Direct comparison; 120 human/120 ChatGPT applied-linguistics abstracts; results are field/abstract specific."
+    },
+    "S07": {
+      "title": "Human-written vs ChatGPT-generated texts: Stance in English research article abstracts (System 2025)",
+      "url": "https://doi.org/10.1016/j.system.2025.103842",
+      "notes": "Direct comparison; 600 human and 600 ChatGPT abstracts; AI abstracts more affect-oriented stance. Abstracts only."
+    },
+    "S08": {
+      "title": "Park, Jeong & Kim (EMNLP Industry 2026), Style as a Confound",
+      "url": "https://aclanthology.org/2026.emnlp-industry.109/",
+      "notes": "Detector fairness; 135,389 professional editing pairs; detector responses and false positives inconsistent."
+    },
+    "S09": {
+      "title": "Davis & Mahmoud (PMLR 2026), Reference hallucinations",
+      "url": "https://proceedings.mlr.press/v318/davis26a.html",
+      "notes": "Small evaluation; 36 generated academic-style documents; hallucinated references and unsupported claims depend on prompting constraints."
+    },
+    "S10": {
+      "title": "NIH (2025), Supporting Fairness and Originality in NIH Research Applications",
+      "url": "https://grants.nih.gov/grants/guide/notice-files/NOT-OD-25-132.html",
+      "notes": "Funding policy; sections substantially developed by AI not treated as applicant original ideas as of receipt date 2025-09-25."
+    },
+    "S11": {
+      "title": "ICMJE (January 2026), AI use by authors",
+      "url": "https://www.icmje.org/recommendations/browse/artificial-intelligence/ai-use-by-authors.html",
+      "notes": "Editorial policy; disclosure, human responsibility, accurate citations and originality."
+    },
+    "S12": {
+      "title": "EQUATOR Network, STROBE reporting guideline",
+      "url": "https://equator-network.org/reporting-guidelines/strobe/index.html",
+      "notes": "Scientific reporting guideline; legitimate methodological conventions must be protected."
+    },
+    "S13": {
+      "title": "EQUATOR Network, CONSORT 2025 reporting guideline",
+      "url": "https://equator-network.org/reporting-guidelines/consort/",
+      "notes": "Scientific reporting guideline; protect required reporting and trial terminology."
+    },
+    "S14": {
+      "title": "Geng & Trotta (Findings ACL 2025), Human-LLM coevolution in academic writing",
+      "url": "https://aclanthology.org/2025.findings-acl.657/",
+      "notes": "Corpus trend; some previously AI-associated word rates fell after becoming known; lexical cues drift over time."
+    },
+    "S15": {
+      "title": "Zhang & Zhang (JEAP 2025), Disciplinary variation of metadiscourse",
+      "url": "https://doi.org/10.1016/j.jeap.2025.101540",
+      "notes": "Direct comparison across eight disciplines; metadiscourse differences are genre/discipline-dependent."
+    }
+  }
+}
