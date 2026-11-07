@@ -180,10 +180,10 @@ P0 is an *editorial/integrity* priority (not evidence of authorship); P1 is disc
 
 ### L04 · Uniform sentence construction and low burstiness (P2)
 
-- **Description:** Closely repeated syntactic frames, steady metronomic sentence lengths (e.g., constant 18–24 words), or uniform clause openings reduce rhythm variation and create a flat, low-burstiness cadence.
-- **Evidence:** cross_domain_empirical / conditional; research status does not establish authorship.
-- **Check before changing:** Parallelism is essential in aims, hypotheses, and methods; uniformity alone is not a problem.
-- **Proposed intervention:** Vary construction and inject burstiness by alternating concise, punchy assertions (6–12 words) with compound, evidence-rich explanatory sentences (25–40 words), and varying opening structures.
+- **Description:** Closely repeated syntactic frames, steady metronomic sentence lengths, or uniform clause openings reduce rhythm variation and create a flat, monotonous cadence.
+- **Evidence:** research_informed_hypothesis / conditional; research status does not establish authorship. Russell et al. (S02) provide evidence about human-recognized stylistic characteristics of machine-generated nonfiction, but their reported results do not establish the particular sentence-length thresholds, rigid word-count bins, or standard-deviation cutoffs used here.
+- **Check before changing:** Parallelism is essential in aims, hypotheses, and methods; uniformity alone is not a problem. Explicit study design, methodological sequencing, hypothesis enumeration, and standardized reporting conventions override stylistic diversity objectives.
+- **Proposed intervention:** Review extended passages for repetitive sentence architecture and monotonous progression. Vary sentence structure when doing so improves clarity, emphasis, or argument flow. Let scientific content determine sentence length; do not target particular word counts or statistical distributions.
 - **Evidence references:** S02
 
 ### L05 · Unnecessarily abstract nominalizations (P2)
@@ -204,18 +204,18 @@ P0 is an *editorial/integrity* priority (not evidence of authorship); P1 is disc
 
 ### L07 · Mechanical punctuation habits and em-dash overuse (P2)
 
-- **Description:** Heavy, repetitive reliance on em dashes (—) to insert parenthetical commentary, create dramatic pauses, or stitch clauses together; mechanical colon/semicolon stacking.
+- **Description:** Heavy, repetitive reliance on em dashes (—) across multiple sentences as parenthetical commentary, theatrical pauses, or clause-stitching crutches; mechanical colon/semicolon stacking.
 - **Evidence:** research_informed_hypothesis / unvalidated_hypothesis; research status does not establish authorship.
-- **Check before changing:** Em dashes and colons have legitimate technical uses; evaluate whether they form a repetitive parenthetical crutch that breaks prose cadence.
-- **Proposed intervention:** Replace overused em dashes with standard syntactic subordination, natural commas, parentheses for technical qualifiers, or clean sentence splits.
+- **Check before changing:** A single paired em-dash parenthetical within a sentence is standard grammatical punctuation. Evaluate whether em dashes are clustered across multiple sentences or serve as repetitive rhetorical interruptions.
+- **Proposed intervention:** Distinguish legitimate paired punctuation from repetitive interruptions. When em dashes cluster across sentences, replace with standard syntactic subordination, natural commas, parentheses for technical qualifiers, or clean sentence splits.
 - **Evidence references:** S02
 
 ### L08 · Predictable paragraph architecture and list-like flows (P2)
 
 - **Description:** Monotonously uniform paragraph lengths across a section, rigid list-like flows (cataloging points with formulaic enumerations), and predictable summary conclusions ending every paragraph with a redundant recap.
 - **Evidence:** research_informed_hypothesis / unvalidated_hypothesis; research status does not establish authorship.
-- **Check before changing:** Specific aims and sequential protocols legitimately use parallel list structures.
-- **Proposed intervention:** Vary paragraph length based on argument complexity; replace tidy list-like enumerations with substantive logical transitions; remove predictable concluding sentences that merely rephrase previous statements.
+- **Check before changing:** Explicit study design, methodological sequencing, hypothesis enumeration (such as Specific Aims), and standardized reporting conventions should override stylistic diversity objectives.
+- **Proposed intervention:** In narrative prose, vary paragraph length based on argument complexity; replace tidy list-like enumerations with substantive logical transitions; remove predictable concluding sentences that merely rephrase previous statements. Preserve functional enumeration in aims, protocols, and methods.
 - **Evidence references:** S02, S06
 
 ## Reference key

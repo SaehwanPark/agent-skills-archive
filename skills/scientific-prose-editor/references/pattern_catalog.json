@@ -1,7 +1,8 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "date": "2026-11-07",
   "status": "research-informed candidate taxonomy; not empirically validated as a scoring instrument",
+  "changelog": "v0.2.0: Expanded taxonomy from 24 to 26 patterns by adding L07 (Mechanical punctuation habits and em-dash overuse) and L08 (Predictable paragraph architecture and list-like flows). Updated L04 burstiness guidance and evidence level to be descriptive and advisory rather than prescriptive word-count bins. Added explicit scientific precedence exceptions for study design, methodological sequencing, hypothesis enumeration, and standardized reporting conventions across L04, L07, and L08.",
   "priority_definitions": {
     "P0": "meaning, integrity or demonstrable discourse defect; review first",
     "P1": "high-leverage section-level editorial issue",
@@ -306,13 +307,13 @@
       "id": "L04",
       "family": "surface",
       "label": "Uniform sentence construction and low burstiness",
-      "evidence_level": "cross_domain_empirical",
+      "evidence_level": "research_informed_hypothesis",
       "editorial_priority": "P2",
       "ai_association": "conditional",
       "unit": "paragraph",
-      "description": "Closely repeated syntactic frames, steady metronomic sentence lengths, or uniform clause openings reduce rhythm variation and create a flat, low-burstiness cadence.",
-      "false_positive_guard": "Parallelism is essential in aims, hypotheses, and methods; uniformity alone is not a problem.",
-      "editing_guidance": "Vary construction and inject burstiness by alternating concise, punchy assertions with compound, evidence-rich explanatory sentences, and varying opening structures.",
+      "description": "Closely repeated syntactic frames, steady metronomic sentence lengths, or uniform clause openings reduce rhythm variation and create a flat, monotonous cadence.",
+      "false_positive_guard": "Parallelism is essential in aims, hypotheses, and methods; explicit study design, methodological sequencing, hypothesis enumeration, and reporting conventions override stylistic diversity objectives.",
+      "editing_guidance": "Review extended passages for repetitive sentence architecture and monotonous progression; vary structure when doing so improves clarity, emphasis, or argument flow, letting scientific content determine sentence length rather than targeting rigid word counts or statistical distributions.",
       "source_ids": [
         "S02"
       ],
@@ -361,9 +362,9 @@
       "editorial_priority": "P2",
       "ai_association": "unvalidated_hypothesis",
       "unit": "paragraph",
-      "description": "Heavy and repetitive use of em dashes (—) or mechanical punctuation crutches breaking prose cadence and serving as a parenthetical crutch.",
-      "false_positive_guard": "Em dashes are valid punctuation; check if cadence is disrupted or if em dashes are clustered repetitively.",
-      "editing_guidance": "Replace overused em dashes with standard syntactic subordination, natural commas, parentheses, or clean sentence splits.",
+      "description": "Heavy and repetitive reliance on em dashes (—) across multiple sentences as parenthetical commentary, theatrical pauses, or clause-stitching crutches; mechanical colon/semicolon stacking.",
+      "false_positive_guard": "A single paired em-dash parenthetical within a sentence is standard punctuation; evaluate whether dashes cluster repeatedly across multiple sentences or serve as repetitive rhetorical interruptions.",
+      "editing_guidance": "Distinguish legitimate paired parentheticals from repetitive interruptions; replace overused em dashes across sentences with standard syntactic subordination, natural commas, parentheses, or clean sentence splits.",
       "source_ids": [
         "S02"
       ],
@@ -379,8 +380,8 @@
       "ai_association": "unvalidated_hypothesis",
       "unit": "section",
       "description": "Uniform paragraph lengths across sections, tidy list-like flows, and formulaic summary conclusions at the close of every paragraph.",
-      "false_positive_guard": "Methodological steps and specific aims naturally follow enumerated or parallel structures.",
-      "editing_guidance": "Vary paragraph progression organically; replace tidy formulaic lists with substantive transitions; cut predictable repetitive concluding sentences.",
+      "false_positive_guard": "Explicit study design, methodological sequencing, hypothesis enumeration (such as Specific Aims), and reporting conventions override stylistic diversity objectives.",
+      "editing_guidance": "In narrative prose, vary paragraph progression organically; replace tidy formulaic lists with substantive transitions; cut predictable repetitive concluding sentences while preserving functional enumeration in aims, protocols, and methods.",
       "source_ids": [
         "S02",
         "S06"

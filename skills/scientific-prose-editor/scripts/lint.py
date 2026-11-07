@@ -34,14 +34,14 @@ PATTERNS = {
           "A grant innovation claim can be valid when grounded in specific preliminary evidence."),
   "L03": ("Dense explicit transition sequence", "P2", "Multiple sentence-opening transitions may be unnecessary.",
           "Transitions can encode meaningful logic, particularly in technical writing."),
-  "L04": ("Uniform sentence length and low burstiness", "P2", "Consecutive sentences have uniform length and structure, creating a flat cadence.",
-          "Parallelism is essential in aims, hypotheses, and methods; check if variety aids comprehension."),
+  "L04": ("Uniform sentence construction and low burstiness", "P2", "Consecutive sentences have uniform length and structure, creating a flat cadence.",
+          "Parallelism is essential in aims, hypotheses, and methods; explicit study design and reporting conventions override stylistic diversity objectives."),
   "L06": ("Decorative general recap", "P2", "Consider ending with the concrete finding rather than generalized importance.",
           "A conclusion is appropriate when it answers the specific question."),
-  "L07": ("Punctuation habit or em-dash overuse", "P2", "Repetitive em dashes or mechanical punctuation crutches may disrupt reading cadence.",
-          "Occasional em dashes have valid rhetorical or explanatory function."),
+  "L07": ("Punctuation habit or em-dash clustering", "P2", "Repetitive em dashes across sentences may disrupt reading cadence.",
+          "A single paired em-dash parenthetical is standard punctuation; evaluate whether dashes cluster repeatedly across multiple sentences."),
   "L08": ("Predictable list-like flow or repetitive conclusion", "P2", "Formulaic sequential enumeration or repetitive concluding recap reduces natural flow.",
-          "Explicitly numbered aims, steps, or protocol stages naturally use parallel enumeration."),
+          "Explicit study design, methodological sequencing, hypothesis enumeration, and reporting conventions override stylistic diversity objectives."),
   "R04": ("Potential design–claim mismatch", "P0", "A causal-sounding claim appears alongside observational-design cues.",
           "Causal inference can justify some causal claims; requires methodological review."),
 }
@@ -92,13 +92,18 @@ def analyze(text: str, genre: str = "manuscript", section: str = "auto") -> dict
       tok1, tok2 = content_tokens(s1), content_tokens(s2)
       if min(len(tok1), len(tok2)) >= 6 and len(tok1 & tok2) >= 6 and jaccard(tok1, tok2) >= 0.68:
         add("D01", a2, b2, text[a2:b2])
+    block_section = section_at(sections, start)
+    has_aims_or_steps = bool(re.search(
+      r"(?i)\b(?:aim\s*\d+|specific\s*aim|objective\s*\d+|hypothesis\s*\d+|step\s*\d+|phase\s*[I|V|X\d]+|endpoint\s*\d+)\b",
+      block
+    ))
     # Count at sentence starts instead of using variable-width lookbehind.
     beginnings = [(a, s) for a, _b, s in sentences if re.match(r"(?i)^(?:moreover|furthermore|additionally|in addition|notably|importantly)\s*[,;]", s.strip())]
     if len(beginnings) >= 3 and len(sentences) >= 3:
       a = beginnings[0][0]
       add("L03", a, min(a+180, start+len(block)), text[a:min(a+180, start+len(block))])
     # Check for low burstiness / uniform sentence lengths in substantive paragraphs
-    if len(sentences) >= 4:
+    if len(sentences) >= 4 and block_section not in {"methods", "aims", "approach"} and not has_aims_or_steps:
       lengths = [len(re.findall(r"\b\w+\b", s)) for _, _, s in sentences]
       mean_len = sum(lengths) / len(lengths)
       if mean_len >= 14:
@@ -107,15 +112,31 @@ def analyze(text: str, genre: str = "manuscript", section: str = "auto") -> dict
         if std_dev < 3.2:
           add("L04", sentences[0][0], sentences[-1][1], f"Uniform sentence lengths (mean={mean_len:.1f}, std={std_dev:.1f} words)")
 
-    # Punctuation habit: clustered em dashes
+    # Punctuation habit: clustered em dashes across sentences or multiple interruptions
     dashes = list(re.finditer(r"—|--", block))
     if len(dashes) >= 2:
-      add("L07", start + dashes[0].start(), start + dashes[-1].end(), text[start + dashes[0].start():start + dashes[-1].end()])
+      sentences_with_dashes = [s for s in sentences if re.search(r"—|--", s[2])]
+      flag_l07 = False
+      if len(sentences_with_dashes) >= 2:
+        flag_l07 = True
+      elif len(sentences_with_dashes) == 1:
+        s_dashes = list(re.finditer(r"—|--", sentences_with_dashes[0][2]))
+        if len(s_dashes) >= 3:
+          flag_l07 = True
+        elif len(s_dashes) == 2:
+          d1, d2 = s_dashes[0], s_dashes[1]
+          s_text = sentences_with_dashes[0][2]
+          is_paired = bool(s_text[:d1.start()].strip() and s_text[d1.end():d2.start()].strip() and s_text[d2.end():].strip())
+          if not is_paired:
+            flag_l07 = True
+      if flag_l07:
+        add("L07", start + dashes[0].start(), start + dashes[-1].end(), text[start + dashes[0].start():start + dashes[-1].end()])
 
-    # Predictability: formulaic sequential enumerations
-    enums = list(re.finditer(r"(?i)\b(?:first(?:ly)?|second(?:ly)?|third(?:ly)?|finally|lastly)\s*[,;]", block))
-    if len(enums) >= 3:
-      add("L08", start + enums[0].start(), start + enums[-1].end(), text[start + enums[0].start():start + enums[-1].end()])
+    # Predictability: formulaic sequential enumerations (exempting methods, aims, approach, or explicit aims/steps)
+    if block_section not in {"methods", "aims", "approach"} and not has_aims_or_steps:
+      enums = list(re.finditer(r"(?i)\b(?:first(?:ly)?|second(?:ly)?|third(?:ly)?|finally|lastly)\s*[,;]", block))
+      if len(enums) >= 3:
+        add("L08", start + enums[0].start(), start + enums[-1].end(), text[start + enums[0].start():start + enums[-1].end()])
 
     contrasts = list(re.finditer(r"\bnot (?:only|merely)\b.{0,120}?\bbut (?:also|rather)\b", block, re.I | re.S))
     if len(contrasts) >= 2:

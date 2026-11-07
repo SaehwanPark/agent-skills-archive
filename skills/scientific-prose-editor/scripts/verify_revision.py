@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Screen edited scientific prose for changed protected facts; requires human review.
 
-Exit 0: no detected differences. Exit 2: blocked/high-risk changes.
-Exit 3: review warnings only. This is NOT semantic equivalence verification.
+Exit 0: no detected differences in protected tokens. Exit 2: blocked/high-risk changes.
+Exit 3: review warnings only. This is a token-level screen, NOT semantic equivalence verification.
+Mandatory claim-by-claim verification by the editor is required even when the screen passes.
 """
 from __future__ import annotations
 import argparse
@@ -69,7 +70,8 @@ def verify(original: str, edited: str) -> dict:
   return {"tool": "scientific-prose-editor/verify_revision", "version": "1.0.0",
           "status": status, "findings": findings,
           "limitations": [
-            "A clean screen is NOT proof of semantic fidelity; reading against original scientific sources is mandatory.",
+            "A clean screen (screen_passed) is NOT proof of semantic fidelity; lexical and numerical checks cannot detect altered actors, unstated methods, or introduced study details.",
+            "Mandatory claim-by-claim verification against original scientific sources is required even when no tokens are flagged.",
             "Formatting, numeric paraphrases, narrative fact edits, citation systems, negation scope and cross-section inconsistencies require human review.",
             "Token-based comparison may flag harmless changes or miss harmful changes."
           ]}

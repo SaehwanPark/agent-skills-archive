@@ -1,20 +1,35 @@
 # Evaluation design and quality gate
 
-**Primary target:** blinded scientific-editor preference and calibrated scientific quality, never an AI-detector pass rate. **Hard gate:** scientific meaning preserved and policy requirements satisfied. **Secondary diagnostics:** identifiable editorial-pattern frequency and, only where approved, independent detector outcomes with false-positive controls.
+**Primary target:** blinded scientific-editor preference and calibrated scientific quality, never an AI-detector pass rate. **Hard gate:** scientific meaning preserved and policy requirements satisfied. **Secondary diagnostics:** exploratory stylistic patterns without assigned directionality, and, only where approved, independent detector outcomes with false-positive controls.
+
+## Metric hierarchy
+
+Evaluation metrics follow a strict hierarchy to prevent optimizing proxies:
+
+| Metric | Role |
+| --- | --- |
+| Scientific fidelity | Mandatory acceptance criterion |
+| Expert-rated clarity and naturalness | Primary quality outcomes |
+| Specificity and argument coherence | Primary editorial outcomes |
+| Sentence-length variation | Exploratory diagnostic |
+| Punctuation and vocabulary patterns | Exploratory diagnostic |
+| Detector results | Independent research outcome |
+
+Avoid assigning directionality to exploratory diagnostics before reviewer evidence supports it. For example, a higher sentence-length standard deviation is not intrinsically superior—it can be artificially inflated by arbitrary sentence splitting. Exploratory diagnostics describe prose characteristics but are not optimization targets.
 
 ## Design
 
 1. Collect permissioned, provenance-documented scientific passages. Stratify across manuscripts (abstract, Methods, Results, Discussion), grants (aims, significance, approach), proposals and technical documentation. Avoid source-family leakage between development and held-out evaluation.
 2. For each passage, produce a conservative edited variant and optionally a substantive variant. Include human-only, human+AI-polished, AI-drafted+human-revised and fully AI-drafted provenance strata if legitimately documented; do not infer provenance from style, publication dates or detector outputs.
 3. Conduct two complementary independent experiments:
-   - **Blinded paired preference:** scientific reviewers compare A/B with concealed treatment order. Score clarity, naturalness, fidelity (1–5), preference and qualitative reasons. `prepare_eval.py` and `score_eval.py` implement this design.
+   - **Blinded paired preference:** scientific reviewers compare A/B with concealed treatment order. Score clarity, naturalness, fidelity (1–5), preference and qualitative reasons. `prepare_eval.py` and `score_eval.py` implement this design. Keep the evaluation rubric independent of internal editorial heuristics: reviewers must judge writing quality on unprimed criteria without being prompted by the four anti-pattern categories to prevent circular evaluation.
    - **Unpaired authorship-perception:** distinct reviewers rate one version per source family, before a pattern checklist, and freeze ratings. Use the prior Phase 1 v0.3 reviewer workflow if needed. Do not mix this with the paired arm or reveal multiple versions to one unpaired reviewer.
 4. Independently adjudicate scientific fidelity against protocol, tables and citations. Record critical violations with provenance; a clean regex screen is insufficient.
-5. Audit anti-pattern resolution across four specific dimensions:
-   - **Word usage**: rate absence of uncharacteristic non-human vocabulary and promotional buzzwords (*testament, beacon, paramount, delve, pivotal, foster, elevate, intricate, tapestry, crucial nexus*).
-   - **Predictability**: verify non-uniform paragraph lengths, absence of rigid list-like flows in narrative prose, and elimination of formulaic paragraph-final summary conclusions.
-   - **Punctuation habits**: assess em-dash frequency and clustering, verifying that em dashes are not used as repetitive parenthetical crutches.
-   - **Burstiness**: measure sentence-length standard deviation and syntactic variety to ensure healthy cadence variation rather than metronomic sentence lengths.
+5. Track exploratory diagnostics across the four stylistic dimensions (descriptive diagnostics, not optimization scores):
+   - **Word usage**: descriptive incidence of uncharacteristic non-human vocabulary and promotional buzzwords (*testament, beacon, paramount, delve, pivotal, foster, elevate, intricate, tapestry, crucial nexus*).
+   - **Predictability**: descriptive distributions of paragraph lengths, presence of list-like flows in narrative prose, and paragraph-final summary recaps.
+   - **Punctuation habits**: descriptive em-dash frequency and clustering, distinguishing single paired parentheticals from repetitive interruptions across sentences.
+   - **Burstiness**: descriptive sentence-length variation and syntactic variety; cadence is evaluated qualitatively rather than targeting statistical cutoffs.
 6. For detector audits, reserve a held-out cohort and preregister tools, versions, data-sharing permissions, thresholds and outcomes. Report per-class confusion matrices, FPR on documented human texts, uncertainty and length/genre stratification. Do not tune the editor against that held-out set or call scores proof of human authorship.
 
 ## Suggested operational thresholds (design goals, NOT measured success)
