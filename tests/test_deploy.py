@@ -234,14 +234,17 @@ class DeployTests(unittest.TestCase):
 
   def test_readme_skill_table_matches_archive(self) -> None:
     repo = Path(__file__).resolve().parents[1]
-    expected = {skill.name for skill in discover_skills(repo / "skills")}
+    expected = {
+      f"[`{skill.name}`](skills/{skill.name}/SKILL.md)"
+      for skill in discover_skills(repo / "skills")
+    }
     readme = (repo / "README.md").read_text(encoding="utf-8")
     skills_section = readme.split("## Skills in this archive", 1)[1]
     section = skills_section.split("## What a skill looks like", 1)[0]
     documented = {
-      line.split("`", 2)[1]
+      line.split("|", 2)[1].strip()
       for line in section.splitlines()
-      if line.startswith("| `")
+      if line.startswith("| [")
     }
 
     self.assertEqual(documented, expected)

@@ -1,42 +1,13 @@
-# Capture and link handling
+# Capture lookup and replay
 
-## Locate captures
+Browse `https://web.archive.org/web/*/<original-url>` or query the [Wayback CDX index](https://github.com/internetarchive/wayback/tree/master/wayback-cdx-server) for a specific date window:
 
-For quick inspection:
-
-```text
-https://web.archive.org/web/*/<original-url>
+```bash
+curl --get 'https://web.archive.org/cdx/search/cdx' \
+  --data-urlencode 'url=https://example.com/page?x=1&y=2' \
+  --data 'output=json&from=20240101&to=20241231&fl=timestamp,original,statuscode,mimetype&filter=statuscode:200&limit=20'
 ```
 
-For structured selection:
+Use the actual URL and relevant dates. If a redirect may carry the evidence, retry the narrow query without the status filter. Widen dates only when needed. Be aware that `collapse=digest` can hide the occurrence nearest the target date. Honor retry headers and back off on rate limits or service errors.
 
-```text
-https://web.archive.org/cdx?url=<original-url>&output=json&fl=timestamp,original,statuscode,mimetype,digest&filter=statuscode:200&collapse=digest
-```
-
-Prefer a capture with status 200, the expected MIME type, a relevant timestamp, and a
-stable digest. The newest capture is not automatically the correct one.
-
-Fetch raw content when available:
-
-```text
-https://web.archive.org/web/<timestamp>id_/<original-url>
-```
-
-## Resolve links
-
-Resolve relative links against the original live page first, then find or construct the
-archive URL for the resulting absolute URL. Prefer the same capture timestamp for one docs
-set and a nearby timestamp only when the matching snapshot is absent or broken.
-
-- Resolve `../path` against the original page directory.
-- Resolve `/path` against the original origin.
-- Resolve `//host/path` with the original scheme, normally HTTPS.
-
-Do not resolve links against Wayback toolbar URLs or cite archive chrome as source content.
-
-## Reject misleading captures
-
-Reject errors, redirects to unrelated pages, login or consent pages, placeholders, soft
-404s, wrong versions, and documents missing the material needed for the claim. A successful
-HTTP status alone does not establish relevance or completeness.
+Read replay at `https://web.archive.org/web/<timestamp>/<original-url>` or use `<timestamp>id_` for unrewritten content. Confirm which capture was actually served. Resolve relative links in raw content against the original page's URL or base URL before selecting captures of those targets.

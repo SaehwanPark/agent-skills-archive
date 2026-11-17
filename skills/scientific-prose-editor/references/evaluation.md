@@ -21,9 +21,9 @@ Avoid assigning directionality to exploratory diagnostics before reviewer eviden
 
 1. Collect permissioned, provenance-documented scientific passages. Stratify across manuscripts (abstract, Methods, Results, Discussion), grants (aims, significance, approach), proposals and technical documentation. Avoid source-family leakage between development and held-out evaluation.
 2. For each passage, produce a conservative edited variant and optionally a substantive variant. Include human-only, human+AI-polished, AI-drafted+human-revised and fully AI-drafted provenance strata if legitimately documented; do not infer provenance from style, publication dates or detector outputs.
-3. Conduct two complementary independent experiments:
+3. Use blinded preference as the primary experiment. Keep any authorship-perception study independent:
    - **Blinded paired preference:** scientific reviewers compare A/B with concealed treatment order. Score clarity, naturalness, fidelity (1–5), preference and qualitative reasons. `prepare_eval.py` and `score_eval.py` implement this design. Keep the evaluation rubric independent of internal editorial heuristics: reviewers must judge writing quality on unprimed criteria without being prompted by the four anti-pattern categories to prevent circular evaluation.
-   - **Unpaired authorship-perception:** distinct reviewers rate one version per source family, before a pattern checklist, and freeze ratings. Use the prior Phase 1 v0.3 reviewer workflow if needed. Do not mix this with the paired arm or reveal multiple versions to one unpaired reviewer.
+   - **Optional unpaired authorship-perception study:** use distinct reviewers who see one version per source family. Collect and freeze ratings before sharing the pattern checklist.
 4. Independently adjudicate scientific fidelity against protocol, tables and citations. Record critical violations with provenance; a clean regex screen is insufficient.
 5. Track exploratory diagnostics across the four stylistic dimensions (descriptive diagnostics, not optimization scores):
    - **Word usage**: descriptive incidence of uncharacteristic non-human vocabulary and promotional buzzwords (*testament, beacon, paramount, delve, pivotal, foster, elevate, intricate, tapestry, crucial nexus*).
@@ -51,6 +51,19 @@ JSONL, one object per passage pair, required keys:
 `fact_sheet` is required, must be curator-verified and is shown to reviewers as neutral source-of-truth context. It must not expose which text is edited. `rights_status=approved` and `provenance_documented=true` are **attestations by the dataset curator**, not proof provided by the program. Do not mark hypothetical or synthetic passages as externally validated; use synthetic data only for software unit tests and walkthroughs. `prepare_eval.py` refuses unapproved text and duplicate pairs.
 
 Ratings CSV columns are emitted by `prepare_eval.py`. `preferred` is A/B/TIE; `quality_A`, `quality_B`, `naturalness_A`, `naturalness_B`, `fidelity_A`, `fidelity_B` are integers 1–5. A reviewer should rate scientific fidelity only when supplied enough source context to judge it; otherwise the curator must collect fidelity separately and not misrepresent the resulting ratings.
+
+## Run the paired evaluation
+
+From the skill directory, run:
+
+```bash
+python scripts/prepare_eval.py evaluation_pairs.jsonl --out blinded_packets
+python scripts/score_eval.py --key blinded_packets/PRIVATE_ANALYST/assignment_key.json \
+  --ratings blinded_packets/REVIEWERS/R1/ratings.csv blinded_packets/REVIEWERS/R2/ratings.csv \
+  blinded_packets/REVIEWERS/R3/ratings.csv --require-complete
+```
+
+Share only the assigned reviewer packet with each reviewer. Keep the assignment key private.
 
 ## Analysis
 
