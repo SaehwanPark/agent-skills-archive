@@ -3,35 +3,27 @@
 This repository collects reusable skills for coding agents and the tooling used to
 validate and deploy them.
 
-If you are new here, the short version is:
-
-- a **skill** is a small, reusable playbook for a specific kind of task
-- skills live under `skills/<skill-name>/`
-- each skill can be installed into an agent's personal or project skill directory
-- the repo also contains a separate harness for maintaining this archive, but that
-  harness is not itself deployable content
-
-The benefit of using skills is consistency. Instead of re-explaining a workflow every
-time, an agent can load a focused guide for a known task and apply the same pattern
-reliably across projects.
+Each skill provides a short workflow for a specific task. The entry point carries the
+decisions that matter on routine runs. Linked guides, examples, and tools are available
+when the task needs them.
 
 ## Skills in this archive
 
-| Skill | What it does | Why it helps |
-| --- | --- | --- |
-| `simple-code-writer` | Chooses the smallest correct implementation or refactor. | Preserves contracts while avoiding speculative abstractions and dependencies. |
-| `code-commenter` | Adds or reviews comments that preserve rationale, invariants, and public contracts. | Gives maintainers non-obvious context without narrating code mechanics. |
-| `code-reviewer` | Reviews diffs and PRs for concrete production risks. | Produces evidence-based, severity-ranked findings and minimizes false positives. |
-| `fp-developer` | Applies functional-first design to Python, Rust, Swift, Kotlin, and Mojo. | Makes state, effects, failures, types, and testable domain logic explicit. |
-| `plan-designer` | Turns coding requests into bounded, decision-complete implementation plans. | Removes design guesswork while defining tests, non-goals, and stop conditions. |
-| `preferred-workflow` | Guides continuations, features, fixes, and refactors through branch and PR handoff. | Provides a safe default workflow with review that can be explicitly opted out of. |
-| `spec-driven-developer` | Keeps lightweight project state aligned with implementation. | Reconciles specifications, architecture, and changelog history with evidence. |
-| `release-preparer` | Prepares private repositories and packages for public release. | Separates curation, validation, approval-gated publication, and ecosystem details. |
-| `end-user-xp-improver` | Improves user-facing workflows, defaults, errors, recovery, and accessibility. | Grounds interface decisions in a target audience and representative journeys. |
-| `lesson-documenter` | Captures verified, recurring development and operations traps. | Preserves causes and prevention without accumulating debugging diaries. |
-| `wayback-link-fallback` | Recovers version-appropriate archived web evidence. | Handles dead or changed sources while preserving provenance and current-truth checks. |
-| `call-r-lib-in-python` | Integrates R packages and models into Python through `rpy2`. | Makes runtime discovery, dependencies, conversion, fitting, and extraction explicit. |
-| `scientific-prose-editor` | Audits and edits scientific manuscripts, grants, abstracts, and technical prose. | Removes mechanical and templated phrasing while preserving scientific claims, numbers, citations, and author voice. |
+| Skill | When to use it |
+| --- | --- |
+| [`simple-code-writer`](skills/simple-code-writer/SKILL.md) | Make the smallest correct implementation or refactor and verify the affected behavior. |
+| [`code-commenter`](skills/code-commenter/SKILL.md) | Document rationale, invariants, and public contracts close to the code. |
+| [`code-reviewer`](skills/code-reviewer/SKILL.md) | Report actionable defects in a diff with concrete triggers and impact. |
+| [`fp-developer`](skills/fp-developer/SKILL.md) | Make state and effects explicit in Python, Rust, Swift, Kotlin, or Mojo. |
+| [`plan-designer`](skills/plan-designer/SKILL.md) | Write a bounded implementation plan with observable acceptance criteria. |
+| [`preferred-workflow`](skills/preferred-workflow/SKILL.md) | Take a change from repository context through verification and the requested Git handoff. |
+| [`spec-driven-developer`](skills/spec-driven-developer/SKILL.md) | Keep a project's specification, architecture, and changelog aligned with the work. |
+| [`release-preparer`](skills/release-preparer/SKILL.md) | Curate public source and validate Python, Rust, or Mojo release artifacts. |
+| [`end-user-xp-improver`](skills/end-user-xp-improver/SKILL.md) | Improve defaults, errors, recovery, and accessibility on the common user path. |
+| [`lesson-documenter`](skills/lesson-documenter/SKILL.md) | Record a verified cause and prevention for a recurring development trap. |
+| [`wayback-link-fallback`](skills/wayback-link-fallback/SKILL.md) | Find and cite a relevant historical web capture. |
+| [`call-r-lib-in-python`](skills/call-r-lib-in-python/SKILL.md) | Use rpy2 to call R and preserve data and model semantics at the boundary. |
+| [`scientific-prose-editor`](skills/scientific-prose-editor/SKILL.md) | Edit scientific prose and verify meaning claim by claim. Local token and style diagnostics are available for longer or higher-risk edits. |
 
 ## What a skill looks like
 
@@ -54,9 +46,11 @@ The `name` must match the directory name. Keep the top-level `SKILL.md` focused 
 long examples or reference material into `references/` or `examples/` inside the skill
 directory.
 
-All trigger conditions belong in the frontmatter description because it is available
-before the skill loads. Keep `SKILL.md` to the core workflow and directly link every
-bundled Markdown resource so agents can load optional detail only when it applies.
+Give the frontmatter description enough detail for an agent to recognize when to use
+the skill. Keep the normal workflow in `SKILL.md` and link each bundled Markdown
+resource directly with a cue for when to open it. Keep verification proportional to the
+task. For version-sensitive commands, prefer the project's toolchain and link the
+official documentation for the version-specific behavior.
 
 ## Using the archive
 
