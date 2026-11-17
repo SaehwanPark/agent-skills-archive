@@ -1,33 +1,15 @@
 # rpy2 troubleshooting
 
-## R is not found
+Use the same interpreter and environment as the application:
 
-- Run `which R` and `R --version` in the shell that launches Python.
-- Print the active rpy2 and R versions.
-- Check architecture and dynamic-library compatibility before changing bridge code.
+```sh
+R --version
+R RHOME
+python -c 'from importlib.metadata import version; print(version("rpy2"))'
+python -m rpy2.situation
+python -c 'from rpy2.robjects import r; print(r("R.version.string")[0])'
+```
 
-## Package installation fails
+The last command verifies embedded R actually initializes. For loader errors, check that R and Python architectures agree and follow the [rpy2 installation guidance](https://rpy2.github.io/doc/latest/html/overview.html) for the host. Set `R_HOME` only when discovery needs an override.
 
-- Confirm the selected library is writable and first in `.libPaths()`.
-- Inspect missing compilers and system libraries separately from R package errors.
-- Do not fall back to global installation without explicit authorization.
-
-## Conversion is malformed
-
-- Confirm conversion occurs inside the intended scoped converter.
-- Inspect R classes, dimensions, names, factors, missing values, and dates before conversion.
-- Reduce the failing value to one column or object type rather than changing all conversion
-  behavior at once.
-
-## Formula or factor behavior is wrong
-
-- Keep modeling data R-native.
-- Inspect factor levels, contrasts, response encoding, and the formula environment in R.
-- Compare the call with a minimal R-only reproduction.
-
-## Results or diagnostics are missing
-
-- Prefer documented accessors.
-- Normalize `NULL` and package-specific structures in R.
-- Preserve warnings and convergence messages instead of treating a returned object as
-  proof of a successful fit.
+If a package is missing, check `.libPaths()` inside embedded R and compare its libraries with those of the R shell. For malformed conversion, reduce the failing input to a representative column or scalar and inspect type, missingness, and attributes on each side.
