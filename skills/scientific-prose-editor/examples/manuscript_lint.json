@@ -8,7 +8,7 @@
   "issues": [
     {
       "pattern_id": "L01",
-      "label": "Cluster of conventional AI-associated terms",
+      "label": "Cluster of conventional AI-associated terms and buzzwords",
       "priority": "P2",
       "start": 41,
       "end": 1117,
@@ -18,8 +18,8 @@
       },
       "section": "introduction",
       "excerpt": "pivotal, multifaceted, underscore, multifaceted",
-      "rationale": "Check whether repeated ornamental wording improves precision.",
-      "false_positive_guard": "These words are never authorship evidence and may be entirely appropriate.",
+      "rationale": "Check whether repeated ornamental or buzzword wording improves precision.",
+      "false_positive_guard": "These words are never authorship evidence and may be entirely appropriate in technical contexts.",
       "decision": "manual_review_required"
     },
     {

@@ -25,7 +25,8 @@
     }
   ],
   "limitations": [
-    "A clean screen is NOT proof of semantic fidelity; reading against original scientific sources is mandatory.",
+    "A clean screen (screen_passed) is NOT proof of semantic fidelity; lexical and numerical checks cannot detect altered actors, unstated methods, or introduced study details.",
+    "Mandatory claim-by-claim verification against original scientific sources is required even when no tokens are flagged.",
     "Formatting, numeric paraphrases, narrative fact edits, citation systems, negation scope and cross-section inconsistencies require human review.",
     "Token-based comparison may flag harmless changes or miss harmful changes."
   ]
